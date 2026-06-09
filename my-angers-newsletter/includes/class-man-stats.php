@@ -53,7 +53,35 @@ class MAN_Stats {
                 global $wpdb;
                 $table = $wpdb->prefix . 'man_subscribers';
                 $wpdb->update($table, array('status' => 'unsubscribed'), array('id' => $sid));
-                wp_die("Vous avez été désinscrit avec succès.", "Désinscription");
+
+                // Branded unsubscription page
+                ?>
+                <!DOCTYPE html>
+                <html lang="fr">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Désinscription - Angers Info</title>
+                    <script src="https://cdn.tailwindcss.com"></script>
+                    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+                    <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
+                </head>
+                <body class="bg-[#f8fafc] min-h-screen flex items-center justify-center p-6">
+                    <div class="max-w-xl w-full bg-white rounded-[3rem] p-12 shadow-2xl shadow-slate-200 text-center border border-slate-100">
+                        <div class="mb-10"><h1 class="text-3xl font-black uppercase tracking-tighter text-[#f60]">Angers<span class="text-[#121826] italic">Info</span></h1></div>
+                        <div class="mb-8">
+                            <div class="w-24 h-24 rounded-3xl bg-slate-100 flex items-center justify-center mx-auto mb-8 shadow-inner text-slate-400">
+                                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <h2 class="text-4xl font-black text-[#0f172a] mb-4 tracking-tight">C'est fait !</h2>
+                            <p class="text-slate-500 font-bold text-lg leading-relaxed">Vous avez été désinscrit avec succès de notre newsletter. Nous sommes désolés de vous voir partir.</p>
+                        </div>
+                        <a href="<?php echo home_url(); ?>" class="inline-block bg-[#121826] text-white px-10 py-5 rounded-2xl font-black hover:scale-105 transition-transform shadow-xl shadow-slate-900/10 uppercase tracking-widest text-sm">Retour au site</a>
+                    </div>
+                </body>
+                </html>
+                <?php
+                exit;
             }
         }
     }

@@ -137,3 +137,34 @@ $email_template = get_option('man_email_template', 'modern');
         </div>
     </form>
 </div>
+
+<script>
+jQuery(document).ready(function($) {
+    $('input[name="email_template"]').on('change', function() {
+        const selectedValue = $(this).val();
+
+        // Remove active state from all
+        $('.cursor-pointer.group.relative').each(function() {
+            const $container = $(this).find('div.border-4');
+            $container.removeClass('border-[#f60] bg-[#f60]/5 shadow-2xl shadow-[#f60]/20')
+                      .addClass('border-slate-50 hover:border-slate-200 bg-white hover:bg-slate-50');
+            $(this).find('.absolute.inset-0').remove();
+        });
+
+        // Add active state to selected
+        const $activeLabel = $(`input[value="${selectedValue}"]`).closest('label');
+        const $activeContainer = $activeLabel.find('div.border-4');
+
+        $activeContainer.removeClass('border-slate-50 hover:border-slate-200 bg-white hover:bg-slate-50')
+                        .addClass('border-[#f60] bg-[#f60]/5 shadow-2xl shadow-[#f60]/20');
+
+        $activeLabel.find('.aspect-\\[3\\/4\\]').append(`
+            <div class="absolute inset-0 bg-[#f60]/20 backdrop-blur-[2px] flex items-center justify-center">
+                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl animate-in zoom-in-50 duration-300">
+                    <span class="dashicons dashicons-yes-alt text-[#f60]" style="font-size: 40px; width: 40px; height: 40px;"></span>
+                </div>
+            </div>
+        `);
+    });
+});
+</script>

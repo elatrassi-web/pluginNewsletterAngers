@@ -21,7 +21,8 @@ class MAN_Automation {
         $raw_content .= '</div>';
 
         $newsletter = new MAN_Newsletter();
-        $content = $newsletter->prepare_email_content($raw_content, $subject, 0, null);
+        // Force 'modern' for confirmation
+        $content = $newsletter->prepare_email_content($raw_content, $subject, 0, null, 'modern');
         $headers = array('Content-Type: text/html; charset=UTF-8');
 
         wp_mail($email, $subject, $content, $headers);
@@ -38,7 +39,8 @@ class MAN_Automation {
         $raw_content .= '</div>';
 
         $newsletter = new MAN_Newsletter();
-        $content = $newsletter->prepare_email_content($raw_content, $subject, 0, null);
+        // Force 'modern' for welcome
+        $content = $newsletter->prepare_email_content($raw_content, $subject, 0, null, 'modern');
         $headers = array('Content-Type: text/html; charset=UTF-8');
 
         wp_mail($email, $subject, $content, $headers);

@@ -88,8 +88,8 @@ class MAN_Newsletter {
         }
     }
 
-    public function prepare_email_content($raw_content, $subject, $newsletter_id, $sub) {
-        $template_type = get_option('man_email_template', 'modern');
+    public function prepare_email_content($raw_content, $subject, $newsletter_id, $sub, $forced_template = null) {
+        $template_type = $forced_template ? $forced_template : get_option('man_email_template', 'modern');
         $content = $raw_content;
 
         // Process links for tracking if sub exists and not a mock
