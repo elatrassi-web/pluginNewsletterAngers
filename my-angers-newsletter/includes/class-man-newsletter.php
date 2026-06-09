@@ -75,32 +75,51 @@ class MAN_Newsletter {
         $unsubscribe_url = MAN_Stats::get_unsubscribe_url($sub->id);
         $pixel = '<img src="' . MAN_Stats::get_pixel_url($newsletter_id, $sub->id) . '" width="1" height="1" style="display:none;">';
 
-        $footer = '<div style="margin-top:40px; padding-top:20px; border-top:1px solid #eee; font-size:12px; color:#999; text-align:center;">';
-        $footer .= "Vous recevez cet email car vous êtes inscrit à la newsletter d'Angers Info. <br>";
-        $footer .= '<a href="' . $unsubscribe_url . '" style="color:#f60; text-decoration:none;">Se désabonner</a>';
-        $footer .= '</div>';
+        $logo_html = '<div style="text-align:center; padding: 40px 0;">';
+        $logo_html .= '<h1 style="color:#f60; font-size: 32px; font-weight: 900; letter-spacing: -1px; margin:0; text-transform: uppercase;">Angers<span style="color:#121826; font-style: italic;">Info</span></h1>';
+        $logo_html .= '</div>';
+
+        $footer_html = '<div style="margin-top:60px; padding:40px 20px; border-top:1px solid #f1f5f9; text-align:center;">';
+        $footer_html .= '<p style="font-family:sans-serif; font-size:12px; color:#94a3b8; line-height:1.6;">';
+        $footer_html .= 'Vous recevez cet email car vous êtes inscrit à la newsletter d\'Angers Info. <br>';
+        $footer_html .= '<a href="' . $unsubscribe_url . '" style="color:#f60; font-weight:bold; text-decoration:none;">Se désabonner instantanément</a>';
+        $footer_html .= '</p></div>';
 
         switch ($template_type) {
             case 'classic':
-                $final_html = '<div style="font-family:serif; max-width:600px; margin:0 auto; padding:20px; line-height:1.6; color:#333;">';
-                $final_html .= '<h1 style="text-align:center; color:#111; border-bottom:2px solid #111; padding-bottom:10px;">' . esc_html($subject) . '</h1>';
-                $final_html .= $content;
-                $final_html .= $footer . $pixel . '</div>';
+                $final_html = '<div style="font-family:serif; background-color:#ffffff; max-width:650px; margin:0 auto; color:#1a1a1a;">';
+                $final_html .= $logo_html;
+                $final_html .= '<div style="padding:0 40px;">';
+                $final_html .= '<h1 style="font-size:28px; border-bottom:1px solid #1a1a1a; padding-bottom:20px; margin-bottom:40px;">' . esc_html($subject) . '</h1>';
+                $final_html .= '<div style="font-size:17px; line-height:1.7;">' . $content . '</div>';
+                $final_html .= '</div>' . $footer_html . $pixel . '</div>';
                 break;
             case 'minimal':
-                $final_html = '<div style="font-family:sans-serif; max-width:500px; margin:0 auto; padding:10px; line-height:1.5; color:#444;">';
-                $final_html .= $content;
-                $final_html .= '<p style="font-size:11px; color:#ccc; margin-top:30px;"><a href="' . $unsubscribe_url . '">Unsubscribe</a></p>';
-                $final_html .= $pixel . '</div>';
+                $final_html = '<div style="font-family:sans-serif; background-color:#ffffff; max-width:550px; margin:0 auto; padding:40px 20px; color:#334155;">';
+                $final_html .= '<div style="margin-bottom:60px;">' . $logo_html . '</div>';
+                $final_html .= '<div style="font-size:16px; line-height:1.6;">' . $content . '</div>';
+                $final_html .= '<div style="margin-top:80px; border-top:1px solid #e2e8f0; padding-top:20px; font-size:11px; color:#94a3b8; text-align:left;">';
+                $final_html .= 'Angers Info • <a href="' . $unsubscribe_url . '" style="color:#334155;">Désinscription</a>';
+                $final_html .= '</div>' . $pixel . '</div>';
                 break;
             case 'modern':
             default:
-                $final_html = '<div style="font-family:sans-serif; background-color:#f8fafc; padding:40px 0;">';
-                $final_html .= '<div style="max-width:600px; margin:0 auto; background-color:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.05);">';
-                $final_html .= '<div style="background-color:#f60; padding:30px; text-align:center;"><h1 style="color:#ffffff; margin:0; font-size:24px; font-weight:800;">Angers Info</h1></div>';
-                $final_html .= '<div style="padding:40px; color:#1e293b; font-size:16px; line-height:1.8;">' . $content . '</div>';
-                $final_html .= '<div style="padding:40px; background-color:#f1f5f9;">' . $footer . '</div>';
-                $final_html .= '</div>' . $pixel . '</div>';
+                $final_html = '<html><body style="margin:0; padding:0; background-color:#f8fafc;">';
+                $final_html .= '<div style="background-color:#f8fafc; padding:60px 0;">';
+                $final_html .= '<div style="max-width:650px; margin:0 auto; background-color:#ffffff; border-radius:32px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.05);">';
+                $final_html .= $logo_html;
+                $final_html .= '<div style="padding:0 60px 60px 60px; font-family:sans-serif; color:#1e293b; font-size:17px; line-height:1.8;">';
+                $final_html .= '<div style="background-color:#f8fafc; border-radius:24px; padding:30px; margin-bottom:40px; border:1px solid #f1f5f9;">';
+                $final_html .= '<h2 style="margin:0; font-size:24px; font-weight:800; color:#0f172a; text-align:center;">' . esc_html($subject) . '</h2>';
+                $final_html .= '</div>';
+                $final_html .= $content;
+                $final_html .= '</div>';
+                $final_html .= '<div style="background-color:#121826; padding:60px;">';
+                $final_html .= '<div style="text-align:center; margin-bottom:30px;"><span style="color:#f60; font-weight:900; font-size:20px;">Angers Info</span></div>';
+                $final_html .= '<p style="color:#94a3b8; font-size:13px; text-align:center; line-height:1.6; font-family:sans-serif;">';
+                $final_html .= 'Cet email a été conçu avec passion pour les lecteurs d\'Angers.<br>';
+                $final_html .= '<a href="' . $unsubscribe_url . '" style="color:#ffffff; font-weight:bold; text-decoration:underline;">Gérer mon abonnement</a>';
+                $final_html .= '</p></div></div></div>' . $pixel . '</body></html>';
                 break;
         }
 
@@ -136,7 +155,7 @@ class MAN_Newsletter {
         $this->check_permission();
 
         $posts = get_posts(array(
-            'posts_per_page' => 10,
+            'posts_per_page' => 12,
             'post_status' => 'publish'
         ));
 
@@ -147,7 +166,7 @@ class MAN_Newsletter {
                 'title' => get_the_title($post->ID),
                 'excerpt' => wp_trim_words(get_the_excerpt($post->ID), 20),
                 'url' => get_permalink($post->ID),
-                'thumbnail' => get_the_post_thumbnail_url($post->ID, 'thumbnail')
+                'thumbnail' => get_the_post_thumbnail_url($post->ID, 'medium')
             );
         }
 
