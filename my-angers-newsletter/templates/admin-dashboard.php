@@ -15,7 +15,7 @@ $total_clicks = $wpdb->get_var("SELECT COUNT(*) FROM $table_stats WHERE action =
 <div class="man-admin-tailwind min-h-screen bg-slate-50 p-8">
     <header class="flex justify-between items-center mb-12">
         <div>
-            <h1 class="text-4xl font-black text-slate-900 tracking-tight">Angers <span class="text-primary">Press</span></h1>
+            <h1 class="text-4xl font-black text-slate-900 tracking-tight">Angers <span class="text-primary">Info</span></h1>
             <p class="text-slate-500 font-medium">L'intelligence artificielle au service de votre audience.</p>
         </div>
         <div class="flex gap-4">

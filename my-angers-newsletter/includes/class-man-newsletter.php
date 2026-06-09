@@ -9,6 +9,7 @@ class MAN_Newsletter {
         add_action('wp_ajax_man_save_campaign', array($this, 'ajax_save_campaign'));
         add_action('wp_ajax_man_get_posts', array($this, 'ajax_get_posts'));
         add_action('wp_ajax_man_send_campaign', array($this, 'ajax_send_campaign'));
+        add_action('wp_ajax_man_send_test_email', array($this, 'ajax_send_test_email'));
     }
 
     private function check_permission() {
@@ -60,23 +61,54 @@ class MAN_Newsletter {
         wp_send_json_success("Campagne envoyée à $count abonnés !");
     }
 
+    public function ajax_send_test_email() {
+        $this->check_permission();
+
+        $test_email = isset($_POST['test_email']) ? sanitize_email($_POST['test_email']) : '';
+        $subject = isset($_POST['subject']) ? sanitize_text_field($_POST['subject']) : '';
+        $content = isset($_POST['content']) ? wp_kses_post($_POST['content']) : '';
+
+        if (!is_email($test_email)) {
+            wp_send_json_error('Adresse email invalide');
+        }
+
+        // Mock subscriber object for preview
+        $sub = (object) array(
+            'id' => 0,
+            'email' => $test_email
+        );
+
+        $final_content = $this->prepare_email_content($content, $subject, 0, $sub);
+        $headers = array('Content-Type: text/html; charset=UTF-8');
+
+        if (wp_mail($test_email, "[TEST] " . $subject, $final_content, $headers)) {
+            wp_send_json_success('Email de test envoyé avec succès !');
+        } else {
+            wp_send_json_error("Erreur lors de l'envoi de l'email de test.");
+        }
+    }
+
     public function prepare_email_content($raw_content, $subject, $newsletter_id, $sub) {
         $template_type = get_option('man_email_template', 'modern');
         $content = $raw_content;
 
-        // Process links for tracking
-        $content = preg_replace_callback('/href="([^"]+)"/', function($matches) use ($newsletter_id, $sub) {
-            $url = $matches[1];
-            if (strpos($url, 'mailto:') === 0 || strpos($url, '#') === 0) return $matches[0];
-            $tracked_url = MAN_Stats::get_tracking_url($newsletter_id, $sub->id, $url);
-            return 'href="' . $tracked_url . '"';
-        }, $content);
-
-        $unsubscribe_url = MAN_Stats::get_unsubscribe_url($sub->id);
-        $pixel = '<img src="' . MAN_Stats::get_pixel_url($newsletter_id, $sub->id) . '" width="1" height="1" style="display:none;">';
+        // Process links for tracking if sub exists and not a mock
+        if ($sub && $sub->id > 0) {
+            $content = preg_replace_callback('/href="([^"]+)"/', function($matches) use ($newsletter_id, $sub) {
+                $url = $matches[1];
+                if (strpos($url, 'mailto:') === 0 || strpos($url, '#') === 0) return $matches[0];
+                $tracked_url = MAN_Stats::get_tracking_url($newsletter_id, $sub->id, $url);
+                return 'href="' . $tracked_url . '"';
+            }, $content);
+            $unsubscribe_url = MAN_Stats::get_unsubscribe_url($sub->id);
+            $pixel = '<img src="' . MAN_Stats::get_pixel_url($newsletter_id, $sub->id) . '" width="1" height="1" style="display:none;">';
+        } else {
+            $unsubscribe_url = '#';
+            $pixel = '';
+        }
 
         $logo_html = '<div style="text-align:center; padding: 40px 0;">';
-        $logo_html .= '<h1 style="color:#f60; font-size: 32px; font-weight: 900; letter-spacing: -1px; margin:0; text-transform: uppercase;">Angers<span style="color:#121826; font-style: italic;">Info</span></h1>';
+        $logo_html .= '<h1 style="color:#f60; font-size: 32px; font-weight: 900; letter-spacing: -1px; margin:0; text-transform: uppercase; font-family: sans-serif;">Angers<span style="color:#121826; font-style: italic;">Info</span></h1>';
         $logo_html .= '</div>';
 
         $footer_html = '<div style="margin-top:60px; padding:40px 20px; border-top:1px solid #f1f5f9; text-align:center;">';
@@ -87,28 +119,32 @@ class MAN_Newsletter {
 
         switch ($template_type) {
             case 'classic':
-                $final_html = '<div style="font-family:serif; background-color:#ffffff; max-width:650px; margin:0 auto; color:#1a1a1a;">';
+                $final_html = '<html><body style="margin:0; padding:0; background-color:#ffffff; color:#1a1a1a;">';
+                $final_html .= '<div style="font-family: Georgia, serif; max-width:650px; margin:0 auto; padding: 20px;">';
                 $final_html .= $logo_html;
                 $final_html .= '<div style="padding:0 40px;">';
-                $final_html .= '<h1 style="font-size:28px; border-bottom:1px solid #1a1a1a; padding-bottom:20px; margin-bottom:40px;">' . esc_html($subject) . '</h1>';
-                $final_html .= '<div style="font-size:17px; line-height:1.7;">' . $content . '</div>';
-                $final_html .= '</div>' . $footer_html . $pixel . '</div>';
+                $final_html .= '<h1 style="font-size:32px; border-bottom:2px solid #1a1a1a; padding-bottom:20px; margin-bottom:40px; text-align:center;">' . esc_html($subject) . '</h1>';
+                $final_html .= '<div style="font-size:18px; line-height:1.8; color:#1a1a1a;">' . $content . '</div>';
+                $final_html .= '</div>' . $footer_html . $pixel . '</div></body></html>';
                 break;
             case 'minimal':
-                $final_html = '<div style="font-family:sans-serif; background-color:#ffffff; max-width:550px; margin:0 auto; padding:40px 20px; color:#334155;">';
-                $final_html .= '<div style="margin-bottom:60px;">' . $logo_html . '</div>';
+                $final_html = '<html><body style="margin:0; padding:0; background-color:#ffffff; color:#334155;">';
+                $final_html .= '<div style="font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width:550px; margin:0 auto; padding:60px 20px;">';
+                $final_html .= '<div style="margin-bottom:60px; text-align:left;">';
+                $final_html .= '<h2 style="color:#f60; font-weight:900; margin:0; font-size:24px;">Angers Info</h2>';
+                $final_html .= '</div>';
                 $final_html .= '<div style="font-size:16px; line-height:1.6;">' . $content . '</div>';
-                $final_html .= '<div style="margin-top:80px; border-top:1px solid #e2e8f0; padding-top:20px; font-size:11px; color:#94a3b8; text-align:left;">';
-                $final_html .= 'Angers Info • <a href="' . $unsubscribe_url . '" style="color:#334155;">Désinscription</a>';
-                $final_html .= '</div>' . $pixel . '</div>';
+                $final_html .= '<div style="margin-top:100px; border-top:1px solid #e2e8f0; padding-top:20px; font-size:12px; color:#94a3b8; text-align:left;">';
+                $final_html .= 'Angers Info • <a href="' . $unsubscribe_url . '" style="color:#334155; text-decoration:none;">Désinscription</a>';
+                $final_html .= '</div>' . $pixel . '</div></body></html>';
                 break;
             case 'modern':
             default:
                 $final_html = '<html><body style="margin:0; padding:0; background-color:#f8fafc;">';
                 $final_html .= '<div style="background-color:#f8fafc; padding:60px 0;">';
-                $final_html .= '<div style="max-width:650px; margin:0 auto; background-color:#ffffff; border-radius:32px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.05);">';
+                $final_html .= '<div style="max-width:650px; margin:0 auto; background-color:#ffffff; border-radius:32px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">';
                 $final_html .= $logo_html;
-                $final_html .= '<div style="padding:0 60px 60px 60px; font-family:sans-serif; color:#1e293b; font-size:17px; line-height:1.8;">';
+                $final_html .= '<div style="padding:0 60px 60px 60px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; color:#1e293b; font-size:17px; line-height:1.8;">';
                 $final_html .= '<div style="background-color:#f8fafc; border-radius:24px; padding:30px; margin-bottom:40px; border:1px solid #f1f5f9;">';
                 $final_html .= '<h2 style="margin:0; font-size:24px; font-weight:800; color:#0f172a; text-align:center;">' . esc_html($subject) . '</h2>';
                 $final_html .= '</div>';

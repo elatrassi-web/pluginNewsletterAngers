@@ -13,18 +13,35 @@ class MAN_Automation {
     public static function send_confirmation_email($email, $token) {
         $confirm_url = home_url('/?man_action=confirm&token=' . $token);
         $subject = "Confirmez votre inscription - Angers Info";
-        $message = "Merci de vous être inscrit à la newsletter d'Angers Info.\n\n";
-        $message .= "Veuillez cliquer sur le lien suivant pour confirmer votre inscription :\n";
-        $message .= $confirm_url;
 
-        wp_mail($email, $subject, $message);
+        $raw_content = '<div style="text-align:center; padding: 20px;">';
+        $raw_content .= '<h2 style="font-size:24px; font-weight:800; color:#121826;">Dernière étape !</h2>';
+        $raw_content .= '<p style="font-size:18px; color:#475569; margin-bottom:30px;">Merci de vous être inscrit. Cliquez sur le bouton ci-dessous pour valider votre adresse email.</p>';
+        $raw_content .= '<a href="' . $confirm_url . '" style="display:inline-block; background-color:#f60; color:#fff; padding:18px 40px; text-decoration:none; border-radius:20px; font-weight:900; font-size:18px; box-shadow:0 15px 30px rgba(255,102,0,0.3);">Confirmer mon inscription</a>';
+        $raw_content .= '</div>';
+
+        $newsletter = new MAN_Newsletter();
+        $content = $newsletter->prepare_email_content($raw_content, $subject, 0, null);
+        $headers = array('Content-Type: text/html; charset=UTF-8');
+
+        wp_mail($email, $subject, $content, $headers);
     }
 
     public static function send_welcome_email($email) {
         $subject = "Bienvenue chez Angers Info !";
-        $message = "Votre inscription à la newsletter est confirmée. Vous recevrez désormais nos dernières actualités directement dans votre boîte mail.";
 
-        wp_mail($email, $subject, $message);
+        $raw_content = '<div style="text-align:center; padding: 20px;">';
+        $raw_content .= '<div style="font-size:60px; margin-bottom:20px;">🎉</div>';
+        $raw_content .= '<h2 style="font-size:28px; font-weight:900; color:#121826; margin-bottom:20px;">C\'est officiel, bienvenue !</h2>';
+        $raw_content .= '<p style="font-size:18px; color:#475569; line-height:1.6;">Votre inscription est confirmée. Vous faites désormais partie de la communauté Angers Info.</p>';
+        $raw_content .= '<p style="font-size:18px; color:#475569; margin-top:20px;">Préparez-vous à recevoir le meilleur de l\'actualité locale directement dans votre boîte mail.</p>';
+        $raw_content .= '</div>';
+
+        $newsletter = new MAN_Newsletter();
+        $content = $newsletter->prepare_email_content($raw_content, $subject, 0, null);
+        $headers = array('Content-Type: text/html; charset=UTF-8');
+
+        wp_mail($email, $subject, $content, $headers);
     }
 
     public function handle_new_post_notification($ID, $post) {

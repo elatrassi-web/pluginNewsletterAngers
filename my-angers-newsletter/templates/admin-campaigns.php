@@ -21,9 +21,10 @@ $subscribers = $wpdb->get_results("SELECT * FROM $table_subscribers WHERE status
             <h1 class="text-6xl font-black text-[#0f172a] tracking-tighter">Studio <span class="text-[#f60] italic">Créatif</span></h1>
             <p class="text-slate-500 font-bold mt-3 text-lg opacity-80">Composez une expérience mémorable pour vos lecteurs.</p>
         </div>
-        <div class="flex gap-4 w-full md:w-auto">
-            <button type="button" id="save-campaign" class="flex-1 md:flex-none bg-white text-slate-900 border-2 border-slate-200 px-10 py-5 rounded-3xl font-black hover:bg-slate-50 transition-all shadow-sm">Enregistrer le brouillon</button>
-            <button type="button" id="send-campaign" class="flex-1 md:flex-none bg-[#f60] text-white px-10 py-5 rounded-3xl font-black hover:scale-105 transition-transform shadow-2xl shadow-[#f60]/30">Diffuser maintenant</button>
+        <div class="flex flex-wrap gap-4 w-full md:w-auto">
+            <button type="button" id="save-campaign" class="flex-1 md:flex-none bg-white text-slate-900 border-2 border-slate-200 px-8 py-5 rounded-3xl font-black hover:bg-slate-50 transition-all shadow-sm">Brouillon</button>
+            <button type="button" id="open-test-modal" class="flex-1 md:flex-none bg-slate-900 text-white px-8 py-5 rounded-3xl font-black hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10">Envoyer un test</button>
+            <button type="button" id="send-campaign" class="flex-1 md:flex-none bg-[#f60] text-white px-8 py-5 rounded-3xl font-black hover:scale-105 transition-transform shadow-2xl shadow-[#f60]/30">Diffuser</button>
         </div>
     </header>
 
@@ -92,6 +93,27 @@ $subscribers = $wpdb->get_results("SELECT * FROM $table_subscribers WHERE status
                 </div>
                 <h4 class="text-[#064e3b] text-2xl font-black mb-4">Conformité RGPD</h4>
                 <p class="text-[#065f46]/70 text-base font-bold leading-relaxed">Un lien de désinscription sera automatiquement ajouté pour respecter les normes.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Envoi Test -->
+    <div id="testEmailModal" class="fixed inset-0 hidden z-[999999] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/90 backdrop-blur-xl transition-opacity duration-500 modal-overlay-test"></div>
+        <div class="relative bg-white rounded-[4rem] w-full max-w-2xl flex flex-col shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden border-0 scale-95 opacity-0 transition-all duration-500 transform" id="testModalContent">
+            <div class="p-12 text-center">
+                <div class="w-24 h-24 bg-[#f60]/10 rounded-full flex items-center justify-center text-[#f60] mx-auto mb-8">
+                    <span class="dashicons dashicons-email-alt2" style="font-size: 40px; width: 40px; height: 40px;"></span>
+                </div>
+                <h3 class="text-4xl font-black text-slate-900 tracking-tight mb-4">Envoyer un <span class="text-[#f60]">Test</span></h3>
+                <p class="text-slate-400 font-bold text-lg mb-10">Vérifiez le rendu avant de l'envoyer à tous vos abonnés.</p>
+
+                <input type="email" id="test-email-address" class="w-full bg-slate-50 border-0 rounded-3xl px-8 py-6 text-xl font-black text-center focus:ring-8 focus:ring-[#f60]/5 transition-all mb-8" placeholder="email@exemple.com" value="<?php echo esc_attr(get_option('admin_email')); ?>">
+
+                <div class="flex gap-4">
+                    <button type="button" class="close-test-modal flex-1 bg-slate-50 text-slate-400 px-8 py-5 rounded-3xl font-black hover:bg-slate-100 transition-all">Annuler</button>
+                    <button type="button" id="confirm-send-test" class="flex-[2] bg-[#121826] text-white px-8 py-5 rounded-3xl font-black hover:bg-[#f60] transition-all shadow-xl shadow-slate-900/20">Lancer le test</button>
+                </div>
             </div>
         </div>
     </div>
@@ -226,7 +248,62 @@ jQuery(document).ready(function($) {
     });
 
     $('#save-campaign').on('click', function() {
-        saveCampaign(function(response) { alert(response.data.message); });
+        saveCampaign(function(response) {
+            const $btn = $('#save-campaign');
+            const originalText = $btn.text();
+            $btn.text('Enregistré !').addClass('bg-emerald-500 text-white border-emerald-500');
+            setTimeout(() => { $btn.text(originalText).removeClass('bg-emerald-500 text-white border-emerald-500'); }, 2000);
+        });
+    });
+
+    // Test Email Modal Logic
+    const $testModal = $('#testEmailModal');
+    const $testModalContent = $('#testModalContent');
+
+    $('#open-test-modal').on('click', function() {
+        $testModal.removeClass('hidden').css('display', 'flex');
+        setTimeout(() => { $testModalContent.removeClass('scale-95 opacity-0').addClass('scale-100 opacity-100'); }, 10);
+    });
+
+    function closeTestModal() {
+        $testModalContent.removeClass('scale-100 opacity-100').addClass('scale-95 opacity-0');
+        setTimeout(() => { $testModal.addClass('hidden').css('display', 'none'); }, 500);
+    }
+
+    $('.close-test-modal, .modal-overlay-test').on('click', closeTestModal);
+
+    $('#confirm-send-test').on('click', function() {
+        const testEmail = $('#test-email-address').val();
+        if (!testEmail) { alert('Veuillez saisir une adresse email.'); return; }
+
+        const $btn = $(this);
+        $btn.prop('disabled', true).html('<span class="dashicons dashicons-update animate-spin"></span>');
+
+        const subject = $('#campaign-subject').val();
+        const content = (typeof tinymce !== 'undefined' && tinymce.get('campaign-content')) ? tinymce.get('campaign-content').getContent() : $('#campaign-content').val();
+
+        $.ajax({
+            url: man_admin.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'man_send_test_email',
+                test_email: testEmail,
+                subject: subject,
+                content: content,
+                nonce: man_admin.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert(response.data);
+                    closeTestModal();
+                } else {
+                    alert(response.data);
+                }
+            },
+            complete: function() {
+                $btn.prop('disabled', false).text('Lancer le test');
+            }
+        });
     });
 
     $('#send-campaign').on('click', function() {
