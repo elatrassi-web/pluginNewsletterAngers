@@ -14,7 +14,7 @@ $content = $campaign ? $campaign->content : '';
 $subscribers = $wpdb->get_results("SELECT * FROM $table_subscribers WHERE status = 'active' ORDER BY email ASC");
 ?>
 
-<div class="man-admin-tailwind min-h-screen bg-[#f1f5f9] p-4 md:p-12">
+<div class="man-admin-tailwind min-h-screen bg-[#f1f5f9] p-4 md:p-12 relative">
     <!-- Header -->
     <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-6">
         <div>
@@ -95,13 +95,11 @@ $subscribers = $wpdb->get_results("SELECT * FROM $table_subscribers WHERE status
             </div>
         </div>
     </div>
-</div>
 
-<!-- Hyper Modern Modal at the end of file to ensure it's on top -->
-<div id="insertPostsModal" class="fixed inset-0 hidden z-[999999]">
-    <div class="absolute inset-0 bg-slate-900/90 backdrop-blur-xl transition-opacity duration-500"></div>
-    <div class="absolute inset-0 flex items-center justify-center p-4 md:p-12">
-        <div class="bg-white rounded-[4rem] w-full max-w-6xl max-h-[90vh] flex flex-col shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden border-0 scale-95 opacity-0 transition-all duration-500 transform" id="modalContent">
+    <!-- Hyper Modern Modal INSIDE tailwind container -->
+    <div id="insertPostsModal" class="fixed inset-0 hidden z-[999999] flex items-center justify-center p-4 md:p-12">
+        <div class="absolute inset-0 bg-slate-900/90 backdrop-blur-xl transition-opacity duration-500 modal-overlay"></div>
+        <div class="relative bg-white rounded-[4rem] w-full max-w-6xl max-h-[90vh] flex flex-col shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden border-0 scale-95 opacity-0 transition-all duration-500 transform" id="modalContent">
             <div class="p-12 border-b border-slate-50 flex justify-between items-center bg-white">
                 <div>
                     <h3 class="text-4xl font-black text-slate-900 tracking-tight">Articles <span class="text-[#f60]">Récents</span></h3>
@@ -147,19 +145,21 @@ jQuery(document).ready(function($) {
     const $modalContent = $('#modalContent');
 
     $('#open-post-modal').on('click', function() {
-        $modal.removeClass('hidden');
+        $modal.removeClass('hidden').css('display', 'flex');
         setTimeout(() => {
             $modalContent.removeClass('scale-95 opacity-0').addClass('scale-100 opacity-100');
         }, 10);
         loadPosts();
     });
 
-    $('.close-modal').on('click', function() {
+    function closeModal() {
         $modalContent.removeClass('scale-100 opacity-100').addClass('scale-95 opacity-0');
         setTimeout(() => {
-            $modal.addClass('hidden');
+            $modal.addClass('hidden').css('display', 'none');
         }, 500);
-    });
+    }
+
+    $('.close-modal, .modal-overlay').on('click', closeModal);
 
     $('#recipient-type').on('change', function() {
         if ($(this).val() === 'manual') {
@@ -222,7 +222,7 @@ jQuery(document).ready(function($) {
         } else {
             $('#campaign-content').val($('#campaign-content').val() + postsHtml);
         }
-        $('.close-modal').trigger('click');
+        closeModal();
     });
 
     $('#save-campaign').on('click', function() {
