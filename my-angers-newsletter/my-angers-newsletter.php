@@ -44,10 +44,29 @@ class MyAngersNewsletter {
 
     private function init_hooks() {
         register_activation_hook(__FILE__, array($this, 'activate'));
+        register_deactivation_hook(__FILE__, array($this, 'deactivate'));
+
+        add_filter('wp_mail_from', array($this, 'mail_from'));
+        add_filter('wp_mail_from_name', array($this, 'mail_from_name'));
     }
 
     public function activate() {
         MAN_DB::create_tables();
+        if (!wp_next_scheduled('man_daily_digest')) {
+            wp_schedule_event(strtotime('18:00:00'), 'daily', 'man_daily_digest');
+        }
+    }
+
+    public function deactivate() {
+        wp_clear_scheduled_hook('man_daily_digest');
+    }
+
+    public function mail_from($email) {
+        return 'newsletter@my-angers.info';
+    }
+
+    public function mail_from_name($name) {
+        return 'Angers Info';
     }
 }
 

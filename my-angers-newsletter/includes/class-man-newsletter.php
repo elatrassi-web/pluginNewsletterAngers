@@ -45,7 +45,7 @@ class MAN_Newsletter {
 
         $count = 0;
         foreach ($subscribers as $sub) {
-            $content = $this->prepare_email_content($campaign, $sub);
+            $content = $this->prepare_email_content($campaign->content, $campaign->subject, $campaign->id, $sub);
             $headers = array('Content-Type: text/html; charset=UTF-8');
             if (wp_mail($sub->email, $campaign->subject, $content, $headers)) {
                 $count++;
@@ -60,23 +60,51 @@ class MAN_Newsletter {
         wp_send_json_success("Campagne envoyée à $count abonnés !");
     }
 
-    private function prepare_email_content($campaign, $sub) {
-        $content = $campaign->content;
+    public function prepare_email_content($raw_content, $subject, $newsletter_id, $sub) {
+        $template_type = get_option('man_email_template', 'modern');
+        $content = $raw_content;
 
         // Process links for tracking
-        $content = preg_replace_callback('/href="([^"]+)"/', function($matches) use ($campaign, $sub) {
+        $content = preg_replace_callback('/href="([^"]+)"/', function($matches) use ($newsletter_id, $sub) {
             $url = $matches[1];
             if (strpos($url, 'mailto:') === 0 || strpos($url, '#') === 0) return $matches[0];
-            $tracked_url = MAN_Stats::get_tracking_url($campaign->id, $sub->id, $url);
+            $tracked_url = MAN_Stats::get_tracking_url($newsletter_id, $sub->id, $url);
             return 'href="' . $tracked_url . '"';
         }, $content);
 
-        // Add tracking pixel and footer
-        $pixel = '<img src="' . MAN_Stats::get_pixel_url($campaign->id, $sub->id) . '" width="1" height="1" style="display:none;">';
         $unsubscribe_url = MAN_Stats::get_unsubscribe_url($sub->id);
-        $footer = '<hr><p style="font-size:12px;color:#999;">Vous recevez cet email car vous êtes inscrit à la newsletter d\'Angers Info. <a href="' . $unsubscribe_url . '">Se désabonner</a></p>';
+        $pixel = '<img src="' . MAN_Stats::get_pixel_url($newsletter_id, $sub->id) . '" width="1" height="1" style="display:none;">';
 
-        return '<html><body>' . $content . $footer . $pixel . '</body></html>';
+        $footer = '<div style="margin-top:40px; padding-top:20px; border-top:1px solid #eee; font-size:12px; color:#999; text-align:center;">';
+        $footer .= "Vous recevez cet email car vous êtes inscrit à la newsletter d'Angers Info. <br>";
+        $footer .= '<a href="' . $unsubscribe_url . '" style="color:#f60; text-decoration:none;">Se désabonner</a>';
+        $footer .= '</div>';
+
+        switch ($template_type) {
+            case 'classic':
+                $final_html = '<div style="font-family:serif; max-width:600px; margin:0 auto; padding:20px; line-height:1.6; color:#333;">';
+                $final_html .= '<h1 style="text-align:center; color:#111; border-bottom:2px solid #111; padding-bottom:10px;">' . esc_html($subject) . '</h1>';
+                $final_html .= $content;
+                $final_html .= $footer . $pixel . '</div>';
+                break;
+            case 'minimal':
+                $final_html = '<div style="font-family:sans-serif; max-width:500px; margin:0 auto; padding:10px; line-height:1.5; color:#444;">';
+                $final_html .= $content;
+                $final_html .= '<p style="font-size:11px; color:#ccc; margin-top:30px;"><a href="' . $unsubscribe_url . '">Unsubscribe</a></p>';
+                $final_html .= $pixel . '</div>';
+                break;
+            case 'modern':
+            default:
+                $final_html = '<div style="font-family:sans-serif; background-color:#f8fafc; padding:40px 0;">';
+                $final_html .= '<div style="max-width:600px; margin:0 auto; background-color:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.05);">';
+                $final_html .= '<div style="background-color:#f60; padding:30px; text-align:center;"><h1 style="color:#ffffff; margin:0; font-size:24px; font-weight:800;">Angers Info</h1></div>';
+                $final_html .= '<div style="padding:40px; color:#1e293b; font-size:16px; line-height:1.8;">' . $content . '</div>';
+                $final_html .= '<div style="padding:40px; background-color:#f1f5f9;">' . $footer . '</div>';
+                $final_html .= '</div>' . $pixel . '</div>';
+                break;
+        }
+
+        return $final_html;
     }
 
     public function ajax_save_campaign() {
