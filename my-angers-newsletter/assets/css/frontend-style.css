@@ -1,0 +1,63 @@
+.man-newsletter-form-container {
+    width: 100%;
+    max-width: 600px;
+}
+
+#man-newsletter-form {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+}
+
+#man-email {
+    flex-grow: 1;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 4px 0 0 4px;
+    padding: 12px 20px;
+    color: #fff;
+    font-size: 16px;
+    outline: none;
+}
+
+#man-email::placeholder {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+#man-submit {
+    background-color: #f60; /* Orange color from screenshot */
+    color: #fff;
+    border: none;
+    padding: 0 25px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 0 4px 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+}
+
+#man-submit:hover {
+    background-color: #e55a00;
+}
+
+.man-icon {
+    font-size: 18px;
+}
+
+#man-message {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #fff;
+}
+
+#man-message.error {
+    color: #ff4d4d;
+}
+
+#man-message.success {
+    color: #4BB543;
+}

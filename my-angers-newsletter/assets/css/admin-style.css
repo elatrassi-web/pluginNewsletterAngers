@@ -1,0 +1,22 @@
+.man-admin-wrap {
+    background-color: #f8f9fa;
+    min-height: calc(100vh - 32px);
+    margin-left: -20px;
+    padding-right: 20px;
+}
+
+.man-admin-wrap .card {
+    border-radius: 12px;
+}
+
+.man-admin-wrap h1, .man-admin-wrap h2, .man-admin-wrap h3, .man-admin-wrap h4, .man-admin-wrap h5, .man-admin-wrap h6 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+/* Fix WordPress Admin Bar conflict if needed */
+@media screen and (max-width: 782px) {
+    .man-admin-wrap {
+        margin-left: -10px;
+        padding-right: 10px;
+    }
+}
