@@ -15,6 +15,7 @@ jQuery(document).ready(function($) {
             data: {
                 action: 'man_add_subscriber',
                 email: email,
+                is_admin: '1',
                 nonce: man_admin.nonce
             },
             success: function(response) {
@@ -46,6 +47,29 @@ jQuery(document).ready(function($) {
                     location.reload();
                 } else {
                     alert(response.data);
+                }
+            }
+        });
+    });
+
+    // Import CSV AJAX
+    $('#csv_file').on('change', function() {
+        const file_data = $(this).prop('files')[0];
+        const form_data = new FormData();
+        form_data.append('csv_file', file_data);
+        form_data.append('action', 'man_import_csv');
+        form_data.append('nonce', man_admin.nonce);
+
+        $.ajax({
+            url: man_admin.ajax_url,
+            type: 'POST',
+            data: form_data,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                alert(response.data);
+                if (response.success) {
+                    location.reload();
                 }
             }
         });

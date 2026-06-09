@@ -38,9 +38,8 @@ class MAN_Stats {
             }
 
             if ($action === 'click' && $nid && $sid && isset($_GET['url'])) {
-                $url = base64_decode($_GET['url']);
+                $url = base64_decode(urldecode($_GET['url']));
 
-                // Security: Basic URL validation
                 if (filter_var($url, FILTER_VALIDATE_URL)) {
                     self::log_action($nid, $sid, 'click', $url);
                     wp_redirect($url);
@@ -60,7 +59,7 @@ class MAN_Stats {
     }
 
     public static function get_tracking_url($newsletter_id, $subscriber_id, $target_url) {
-        return home_url("/?man_track=click&nid=$newsletter_id&sid=$subscriber_id&url=" . base64_encode($target_url));
+        return home_url("/?man_track=click&nid=$newsletter_id&sid=$subscriber_id&url=" . urlencode(base64_encode($target_url)));
     }
 
     public static function get_pixel_url($newsletter_id, $subscriber_id) {

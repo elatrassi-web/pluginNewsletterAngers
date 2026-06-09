@@ -9,6 +9,7 @@ class MAN_Subscriber {
         add_action('wp_ajax_man_add_subscriber', array($this, 'ajax_add_subscriber'));
         add_action('wp_ajax_nopriv_man_add_subscriber', array($this, 'ajax_add_subscriber'));
         add_action('wp_ajax_man_delete_subscriber', array($this, 'ajax_delete_subscriber'));
+        add_action('wp_ajax_man_import_csv', array($this, 'ajax_import_csv'));
         add_action('admin_init', array($this, 'handle_export_csv'));
     }
 
@@ -44,8 +45,12 @@ class MAN_Subscriber {
         global $wpdb;
         $table = $wpdb->prefix . 'man_subscribers';
 
-        $existing = $wpdb->get_var($wpdb->prepare("SELECT id FROM $table WHERE email = %s", $email));
+        $existing = $wpdb->get_row($wpdb->prepare("SELECT id, status FROM $table WHERE email = %s", $email));
         if ($existing) {
+            if ($existing->status === 'unsubscribed') {
+                $wpdb->update($table, array('status' => $status), array('id' => $existing->id));
+                return $existing->id;
+            }
             return false;
         }
 
@@ -71,11 +76,19 @@ class MAN_Subscriber {
     }
 
     public function ajax_add_subscriber() {
-        if (is_admin()) {
+        // Distinguish between admin manual add and frontend signup
+        $is_admin_request = !empty($_POST['is_admin']) && $_POST['is_admin'] === '1';
+
+        if ($is_admin_request) {
             if (!current_user_can('manage_options')) {
                 wp_send_json_error('Permission refusée');
             }
             check_ajax_referer('man_admin_nonce', 'nonce');
+            $status = 'active';
+        } else {
+            // Frontend nonce check (optional but recommended)
+            // For simplicity and accessibility, we allow frontend signup without admin nonce
+            $status = (get_option('man_double_optin', '1') === '1') ? 'pending' : 'active';
         }
 
         $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
@@ -83,11 +96,10 @@ class MAN_Subscriber {
             wp_send_json_error('Email invalide');
         }
 
-        $status = (get_option('man_double_optin', '1') === '1' && !is_admin()) ? 'pending' : 'active';
         $subscriber_id = self::add_subscriber($email, $status);
 
         if ($subscriber_id) {
-            wp_send_json_success(is_admin() ? 'Abonné ajouté !' : 'Merci pour votre inscription !');
+            wp_send_json_success($is_admin_request ? 'Abonné ajouté !' : 'Merci pour votre inscription !');
         } else {
             wp_send_json_error('Vous êtes déjà inscrit ou une erreur est survenue.');
         }
@@ -107,6 +119,36 @@ class MAN_Subscriber {
         $wpdb->delete($table, array('id' => $id));
 
         wp_send_json_success('Abonné supprimé');
+    }
+
+    public function ajax_import_csv() {
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Permission refusée');
+        }
+        check_ajax_referer('man_admin_nonce', 'nonce');
+
+        if (empty($_FILES['csv_file']['tmp_name'])) {
+            wp_send_json_error('Aucun fichier reçu');
+        }
+
+        $file = $_FILES['csv_file']['tmp_name'];
+        $handle = fopen($file, 'r');
+        $count = 0;
+
+        // Skip header
+        fgetcsv($handle);
+
+        while (($data = fgetcsv($handle)) !== FALSE) {
+            $email = sanitize_email($data[0]);
+            if (is_email($email)) {
+                if (self::add_subscriber($email, 'active')) {
+                    $count++;
+                }
+            }
+        }
+        fclose($handle);
+
+        wp_send_json_success("$count abonnés importés avec succès !");
     }
 }
 

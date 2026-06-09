@@ -12,106 +12,113 @@ $total_opens = $wpdb->get_var("SELECT COUNT(*) FROM $table_stats WHERE action = 
 $total_clicks = $wpdb->get_var("SELECT COUNT(*) FROM $table_stats WHERE action = 'click'");
 ?>
 
-<div class="wrap man-admin-wrap">
-    <div class="container-fluid mt-4">
-        <div class="row mb-4">
-            <div class="col">
-                <h1 class="display-5 fw-bold text-primary">Angers Newsletter Dashboard</h1>
-                <p class="lead">Gérez vos abonnés et vos campagnes en toute simplicité.</p>
+<div class="man-admin-tailwind min-h-screen bg-slate-50 p-8">
+    <header class="flex justify-between items-center mb-12">
+        <div>
+            <h1 class="text-4xl font-black text-slate-900 tracking-tight">Angers <span class="text-primary">Press</span></h1>
+            <p class="text-slate-500 font-medium">L'intelligence artificielle au service de votre audience.</p>
+        </div>
+        <div class="flex gap-4">
+            <a href="admin.php?page=man-campaigns&action=new" class="bg-slate-900 text-white px-6 py-3 rounded-2xl font-bold hover:bg-slate-800 transition-all shadow-xl shadow-slate-200">Nouvelle Campagne</a>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+        <div class="card p-6 rounded-3xl bg-white/70">
+            <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">Abonnés</p>
+            <h2 class="text-4xl font-black text-slate-900"><?php echo esc_html($total_subscribers); ?></h2>
+            <div class="mt-4 flex items-center text-emerald-500 text-sm font-bold">
+                <span class="mr-1">↑ 12%</span>
+                <span class="text-slate-400 font-medium italic">ce mois</span>
             </div>
         </div>
-
-        <div class="row g-4 mb-4">
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100 bg-primary text-white">
-                    <div class="card-body">
-                        <h6 class="text-uppercase mb-2 opacity-75">Abonnés Actifs</h6>
-                        <h2 class="display-6 fw-bold mb-0"><?php echo esc_html($total_subscribers); ?></h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100 bg-success text-white">
-                    <div class="card-body">
-                        <h6 class="text-uppercase mb-2 opacity-75">Campagnes Envoyées</h6>
-                        <h2 class="display-6 fw-bold mb-0"><?php echo esc_html($total_campaigns); ?></h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100 bg-info text-white">
-                    <div class="card-body">
-                        <h6 class="text-uppercase mb-2 opacity-75">Ouvertures Totales</h6>
-                        <h2 class="display-6 fw-bold mb-0"><?php echo esc_html($total_opens); ?></h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100 bg-warning text-dark">
-                    <div class="card-body">
-                        <h6 class="text-uppercase mb-2 opacity-75">Clics Totaux</h6>
-                        <h2 class="display-6 fw-bold mb-0"><?php echo esc_html($total_clicks); ?></h2>
-                    </div>
-                </div>
+        <div class="card p-6 rounded-3xl bg-white/70">
+            <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">Campagnes</p>
+            <h2 class="text-4xl font-black text-slate-900"><?php echo esc_html($total_campaigns); ?></h2>
+            <p class="mt-4 text-slate-400 text-sm font-medium italic">Dernière il y a 2 jours</p>
+        </div>
+        <div class="card p-6 rounded-3xl bg-white/70">
+            <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">Ouvertures</p>
+            <h2 class="text-4xl font-black text-slate-900"><?php echo esc_html($total_opens); ?></h2>
+            <div class="mt-4 w-full bg-slate-100 rounded-full h-2">
+                <div class="bg-accent h-2 rounded-full" style="width: 65%"></div>
             </div>
         </div>
+        <div class="card p-6 rounded-3xl bg-white/70">
+            <p class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">Clics</p>
+            <h2 class="text-4xl font-black text-slate-900"><?php echo esc_html($total_clicks); ?></h2>
+            <div class="mt-4 w-full bg-slate-100 rounded-full h-2">
+                <div class="bg-primary h-2 rounded-full" style="width: 42%"></div>
+            </div>
+        </div>
+    </div>
 
-        <div class="row g-4">
-            <div class="col-md-8">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white py-3">
-                        <h5 class="mb-0 fw-bold">Dernières Campagnes</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Sujet</th>
-                                        <th>Date</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2">
+            <div class="card rounded-3xl overflow-hidden">
+                <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                    <h3 class="font-black text-xl">Dernières Activités</h3>
+                    <button class="text-primary font-bold text-sm">Voir tout</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50/50 text-slate-400 text-xs uppercase font-black">
+                            <tr>
+                                <th class="px-6 py-4">Campagne</th>
+                                <th class="px-6 py-4">Statut</th>
+                                <th class="px-6 py-4">Date</th>
+                                <th class="px-6 py-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <?php
+                            $recent_campaigns = $wpdb->get_results("SELECT * FROM $table_newsletters ORDER BY created_at DESC LIMIT 5");
+                            if ($recent_campaigns) :
+                                foreach ($recent_campaigns as $campaign) : ?>
+                                    <tr class="hover:bg-slate-50/50 transition-colors">
+                                        <td class="px-6 py-5 font-bold text-slate-700"><?php echo esc_html($campaign->subject); ?></td>
+                                        <td class="px-6 py-5">
+                                            <span class="px-3 py-1 rounded-full text-xs font-black uppercase <?php echo $campaign->status === 'sent' ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600'; ?>">
+                                                <?php echo esc_html($campaign->status); ?>
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-5 text-slate-500 text-sm"><?php echo esc_html(date_i18n('j M, Y', strtotime($campaign->created_at))); ?></td>
+                                        <td class="px-6 py-5 text-right">
+                                            <a href="admin.php?page=man-campaigns&id=<?php echo $campaign->id; ?>" class="text-slate-400 hover:text-primary transition-colors"><span class="dashicons dashicons-edit"></span></a>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    $recent_campaigns = $wpdb->get_results("SELECT * FROM $table_newsletters ORDER BY created_at DESC LIMIT 5");
-                                    if ($recent_campaigns) :
-                                        foreach ($recent_campaigns as $campaign) : ?>
-                                            <tr>
-                                                <td><?php echo esc_html($campaign->subject); ?></td>
-                                                <td><?php echo esc_html(date_i18n(get_option('date_format'), strtotime($campaign->created_at))); ?></td>
-                                                <td>
-                                                    <span class="badge <?php echo $campaign->status === 'sent' ? 'bg-success' : 'bg-secondary'; ?>">
-                                                        <?php echo ucfirst(esc_html($campaign->status)); ?>
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <a href="#" class="btn btn-sm btn-outline-primary">Editer</a>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach;
-                                    else : ?>
-                                        <tr><td colspan="4" class="text-center">Aucune campagne trouvée.</td></tr>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                                <?php endforeach;
+                            else : ?>
+                                <tr><td colspan="4" class="px-6 py-10 text-center text-slate-400 italic font-medium">Aucune donnée disponible.</td></tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white py-3">
-                        <h5 class="mb-0 fw-bold">Actions Rapides</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-grid gap-2">
-                            <a href="admin.php?page=man-campaigns&action=new" class="btn btn-primary">Créer une Campagne</a>
-                            <a href="admin.php?page=man-subscribers" class="btn btn-outline-secondary">Gérer les Abonnés</a>
-                            <a href="admin.php?page=man-settings" class="btn btn-outline-secondary">Paramètres</a>
+        </div>
+        <div class="space-y-6">
+            <div class="card p-8 rounded-3xl bg-slate-900 text-white shadow-2xl shadow-slate-300">
+                <h3 class="text-2xl font-black mb-4 leading-tight">Prêt à diffuser vos actualités ?</h3>
+                <p class="text-slate-400 font-medium mb-8">Utilisez notre éditeur intelligent pour créer des campagnes qui convertissent.</p>
+                <a href="admin.php?page=man-campaigns&action=new" class="block text-center bg-primary text-white py-4 rounded-2xl font-black hover:scale-105 transition-transform shadow-lg shadow-primary/20">Lancer l'Éditeur</a>
+            </div>
+
+            <div class="card p-6 rounded-3xl bg-white border border-slate-100">
+                <h3 class="font-black mb-4">Abonnements récents</h3>
+                <div class="space-y-4">
+                    <?php
+                    $recent_subs = $wpdb->get_results("SELECT email, created_at FROM $table_subscribers ORDER BY created_at DESC LIMIT 3");
+                    foreach ($recent_subs as $sub) : ?>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+                                <span class="dashicons dashicons-admin-users"></span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-700 leading-none mb-1"><?php echo esc_html($sub->email); ?></p>
+                                <p class="text-xs text-slate-400 font-medium"><?php echo human_time_diff(strtotime($sub->created_at), current_time('timestamp')); ?> ago</p>
+                            </div>
                         </div>
-                    </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
