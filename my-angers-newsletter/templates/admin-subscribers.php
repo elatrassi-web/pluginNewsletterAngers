@@ -6,7 +6,7 @@ $table_subscribers = $wpdb->prefix . 'man_subscribers';
 $subscribers = $wpdb->get_results("SELECT * FROM $table_subscribers ORDER BY created_at DESC");
 ?>
 
-<div class="man-admin-tailwind min-h-screen bg-[#f1f5f9] p-4 md:p-12">
+<div class="man-admin-tailwind min-h-screen bg-[#f1f5f9] p-4 md:p-12 relative">
     <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-6">
         <div>
             <h1 class="text-6xl font-black text-[#0f172a] tracking-tighter">Gestion des <span class="text-[#f60] italic">Abonnés</span></h1>
@@ -18,7 +18,7 @@ $subscribers = $wpdb->get_results("SELECT * FROM $table_subscribers ORDER BY cre
                 <input type="file" id="csv_file" class="hidden" accept=".csv">
             </label>
             <a href="<?php echo wp_nonce_url(admin_url('admin.php?page=man-subscribers&action=export_csv'), 'man_export_subscribers'); ?>" class="flex-1 md:flex-none bg-white text-slate-900 border-2 border-slate-200 px-8 py-4 rounded-3xl font-black hover:bg-slate-50 transition-all text-center shadow-sm">Exporter CSV</a>
-            <button class="flex-1 md:flex-none bg-[#f60] text-white px-8 py-4 rounded-3xl font-black hover:scale-105 transition-transform shadow-2xl shadow-[#f60]/30" onclick="document.getElementById('addSubscriberModal').classList.remove('hidden'); setTimeout(() => document.getElementById('modalAddContent').classList.remove('scale-95', 'opacity-0'), 10)">Ajouter manuellement</button>
+            <button type="button" class="flex-1 md:flex-none bg-[#f60] text-white px-8 py-4 rounded-3xl font-black hover:scale-105 transition-transform shadow-2xl shadow-[#f60]/30" id="openAddSubscriber">Ajouter manuellement</button>
         </div>
     </header>
 
@@ -58,25 +58,23 @@ $subscribers = $wpdb->get_results("SELECT * FROM $table_subscribers ORDER BY cre
             </table>
         </div>
     </div>
-</div>
 
-<!-- Add Subscriber Modal -->
-<div id="addSubscriberModal" class="fixed inset-0 hidden z-[999999]">
-    <div class="absolute inset-0 bg-slate-900/90 backdrop-blur-xl transition-opacity duration-500" onclick="closeAddModal()"></div>
-    <div class="absolute inset-0 flex items-center justify-center p-4">
-        <div id="modalAddContent" class="bg-white rounded-[3.5rem] w-full max-w-xl p-12 shadow-2xl scale-95 opacity-0 transition-all duration-500 transform border-0">
-            <div class="mb-10 text-center">
-                <h3 class="text-4xl font-black text-slate-900 tracking-tight">Nouvel <span class="text-[#f60]">Abonné</span></h3>
-                <p class="text-slate-400 font-bold mt-2 text-lg">Ajoutez manuellement un email à votre liste.</p>
+    <!-- Add Subscriber Modal - INSIDE tailwind container for CSS application -->
+    <div id="addSubscriberModal" class="fixed inset-0 hidden z-[999999] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/90 backdrop-blur-xl transition-opacity duration-500 modal-overlay"></div>
+        <div id="modalAddContent" class="relative bg-white rounded-[4rem] w-full max-w-2xl p-16 shadow-[0_0_100px_rgba(0,0,0,0.5)] scale-95 opacity-0 transition-all duration-500 transform border-0">
+            <div class="mb-12 text-center">
+                <h3 class="text-5xl font-black text-slate-900 tracking-tight">Nouvel <span class="text-[#f60]">Abonné</span></h3>
+                <p class="text-slate-400 font-bold mt-4 text-xl">Ajoutez manuellement un email à votre liste.</p>
             </div>
-            <form id="addSubscriberForm" class="space-y-10">
+            <form id="addSubscriberForm" class="space-y-12">
                 <div>
-                    <label class="block text-[11px] font-black uppercase text-slate-400 mb-4 tracking-[0.2em]">ADRESSE EMAIL</label>
-                    <input type="email" class="w-full bg-slate-50 border-0 rounded-[1.5rem] px-8 py-6 focus:ring-[10px] focus:ring-[#f60]/5 focus:bg-white transition-all text-slate-900 font-black text-lg" placeholder="exemple@mail.com" required>
+                    <label class="block text-[11px] font-black uppercase text-slate-400 mb-5 tracking-[0.3em]">ADRESSE EMAIL DE L'ABONNÉ</label>
+                    <input type="email" name="email" class="w-full bg-slate-50 border-0 rounded-[2rem] px-10 py-8 focus:ring-[12px] focus:ring-[#f60]/5 focus:bg-white transition-all text-slate-900 font-black text-2xl placeholder:text-slate-200" placeholder="exemple@mail.com" required>
                 </div>
-                <div class="flex gap-4">
-                    <button type="button" class="flex-1 bg-slate-100 text-slate-600 py-6 rounded-3xl font-black text-lg hover:bg-slate-200 transition-all shadow-sm" onclick="closeAddModal()">Annuler</button>
-                    <button type="submit" class="flex-1 bg-[#f60] text-white py-6 rounded-3xl font-black text-lg hover:scale-[1.03] transition-transform shadow-2xl shadow-[#f60]/30">Confirmer</button>
+                <div class="flex flex-col md:flex-row gap-6 pt-4">
+                    <button type="button" class="close-add-modal flex-1 bg-white text-slate-900 border-2 border-slate-100 py-6 rounded-[2rem] font-black text-xl hover:bg-slate-50 transition-all">Annuler</button>
+                    <button type="submit" class="flex-1 bg-[#121826] text-white py-6 rounded-[2rem] font-black text-xl hover:bg-[#f60] hover:scale-[1.03] transition-all shadow-2xl shadow-slate-900/20">Confirmer l'Ajout</button>
                 </div>
             </form>
         </div>
@@ -84,12 +82,44 @@ $subscribers = $wpdb->get_results("SELECT * FROM $table_subscribers ORDER BY cre
 </div>
 
 <script>
-function closeAddModal() {
-    const modal = document.getElementById('addSubscriberModal');
-    const content = document.getElementById('modalAddContent');
-    content.classList.add('scale-95', 'opacity-0');
-    setTimeout(() => modal.classList.add('hidden'), 500);
-}
+jQuery(document).ready(function($) {
+    const $modal = $('#addSubscriberModal');
+    const $content = $('#modalAddContent');
+
+    $('#openAddSubscriber').on('click', function() {
+        $modal.removeClass('hidden').css('display', 'flex');
+        setTimeout(() => $content.removeClass('scale-95 opacity-0').addClass('scale-100 opacity-100'), 10);
+    });
+
+    function closeAddModal() {
+        $content.removeClass('scale-100 opacity-100').addClass('scale-95 opacity-0');
+        setTimeout(() => $modal.addClass('hidden').css('display', 'none'), 500);
+    }
+
+    $('.close-add-modal, .modal-overlay').on('click', closeAddModal);
+
+    $('#addSubscriberForm').on('submit', function(e) {
+        e.preventDefault();
+        const email = $(this).find('input[name="email"]').val();
+
+        $.ajax({
+            url: man_admin.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'man_add_subscriber',
+                email: email,
+                is_admin: '1',
+                nonce: man_admin.nonce
+            },
+            success: function(response) {
+                alert(response.data);
+                if (response.success) {
+                    location.reload();
+                }
+            }
+        });
+    });
+});
 </script>
 
 <style>
