@@ -14,88 +14,106 @@ $content = $campaign ? $campaign->content : '';
 $subscribers = $wpdb->get_results("SELECT * FROM $table_subscribers WHERE status = 'active' ORDER BY email ASC");
 ?>
 
-<div class="man-admin-tailwind min-h-screen bg-slate-50 p-8">
-    <header class="flex justify-between items-center mb-12">
+<div class="man-admin-tailwind min-h-screen bg-slate-50 p-4 md:p-12">
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
         <div>
-            <h1 class="text-4xl font-black text-slate-900 tracking-tight">Studio <span class="text-primary">Créatif</span></h1>
-            <p class="text-slate-500 font-medium">Composez une expérience mémorable pour vos lecteurs.</p>
+            <h1 class="text-5xl font-black text-slate-900 tracking-tighter">Studio <span class="text-primary italic">Créatif</span></h1>
+            <p class="text-slate-500 font-medium mt-2">Composez une expérience mémorable pour vos lecteurs.</p>
         </div>
-        <div class="flex gap-4">
-            <button type="button" id="save-campaign" class="bg-white text-slate-900 border border-slate-200 px-6 py-3 rounded-2xl font-bold hover:bg-slate-50 transition-all">Enregistrer le brouillon</button>
-            <button type="button" id="send-campaign" class="bg-primary text-white px-6 py-3 rounded-2xl font-bold hover:scale-105 transition-transform shadow-xl shadow-primary/20">Diffuser maintenant</button>
+        <div class="flex gap-4 w-full md:w-auto">
+            <button type="button" id="save-campaign" class="flex-1 md:flex-none bg-white text-slate-900 border-2 border-slate-200 px-8 py-4 rounded-2xl font-black hover:bg-slate-50 transition-all">Enregistrer le brouillon</button>
+            <button type="button" id="send-campaign" class="flex-1 md:flex-none bg-primary text-white px-8 py-4 rounded-2xl font-black hover:scale-105 transition-transform shadow-xl shadow-primary/30">Diffuser maintenant</button>
         </div>
     </header>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="lg:col-span-2 space-y-6">
-            <div class="card rounded-3xl p-8 bg-white">
-                <div class="mb-8">
-                    <label class="block text-xs font-black uppercase text-slate-400 mb-2">Objet du message</label>
-                    <input type="text" id="campaign-subject" class="w-full text-2xl font-black bg-slate-50 border-0 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-primary/10 focus:bg-white transition-all" value="<?php echo esc_attr($subject); ?>" placeholder="Qu'allez-vous raconter aujourd'hui ?">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <!-- Main Editor -->
+        <div class="lg:col-span-2 space-y-8">
+            <div class="card rounded-[2.5rem] p-10 bg-white shadow-xl shadow-slate-200/50 border-0">
+                <div class="mb-10">
+                    <label class="block text-xs font-black uppercase text-slate-400 mb-4 tracking-widest">OBJET DU MESSAGE</label>
+                    <input type="text" id="campaign-subject" class="w-full text-3xl font-black bg-slate-50 border-0 rounded-[1.5rem] px-8 py-6 focus:ring-4 focus:ring-primary/10 focus:bg-white transition-all text-slate-900" value="<?php echo esc_attr($subject); ?>" placeholder="Qu'allez-vous raconter aujourd'hui ?">
                 </div>
                 <div>
-                    <div class="flex justify-between items-end mb-4">
-                        <label class="block text-xs font-black uppercase text-slate-400">Corps de l'email</label>
-                        <button type="button" class="text-xs font-black bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-primary transition-colors" onclick="document.getElementById('insertPostsModal').classList.remove('hidden')">+ Insérer des articles</button>
+                    <div class="flex justify-between items-end mb-6">
+                        <label class="block text-xs font-black uppercase text-slate-400 tracking-widest">CORPS DE L'EMAIL</label>
+                        <button type="button" class="bg-[#121826] text-white px-6 py-3 rounded-xl font-black text-sm hover:bg-primary hover:scale-105 transition-all shadow-lg" onclick="document.getElementById('insertPostsModal').classList.remove('hidden')">
+                            + Insérer des articles
+                        </button>
                     </div>
-                    <div class="rounded-2xl overflow-hidden border border-slate-100 shadow-inner">
-                        <?php wp_editor($content, 'campaign-content', array('textarea_name' => 'content', 'editor_height' => 450, 'tinymce' => array('border' => 'none'))); ?>
+                    <div class="rounded-3xl overflow-hidden border-2 border-slate-50 shadow-inner min-h-[500px]">
+                        <?php wp_editor($content, 'campaign-content', array('textarea_name' => 'content', 'editor_height' => 500, 'tinymce' => array('border' => 'none'))); ?>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="space-y-6">
-            <div class="card rounded-3xl p-8 bg-white">
-                <h3 class="text-xl font-black mb-6">Paramètres d'envoi</h3>
-                <div class="mb-6">
-                    <label class="block text-xs font-black uppercase text-slate-400 mb-2">Audience cible</label>
-                    <select id="recipient-type" class="w-full bg-slate-50 border-0 rounded-xl px-4 py-3 font-bold focus:ring-2 focus:ring-primary/20">
+        <!-- Sidebar -->
+        <div class="space-y-8">
+            <div class="card rounded-[2.5rem] p-10 bg-white shadow-xl shadow-slate-200/50 border-0">
+                <h3 class="text-2xl font-black mb-8 text-slate-900 border-b border-slate-50 pb-4">Paramètres d'envoi</h3>
+                <div class="mb-8">
+                    <label class="block text-xs font-black uppercase text-slate-400 mb-3 tracking-widest">AUDIENCE CIBLE</label>
+                    <select id="recipient-type" class="w-full bg-slate-50 border-0 rounded-2xl px-6 py-4 font-black text-slate-700 focus:ring-4 focus:ring-primary/10">
                         <option value="all">Tous les abonnés actifs (<?php echo count($subscribers); ?>)</option>
                         <option value="manual">Sélection manuelle</option>
                     </select>
                 </div>
 
-                <div id="manual-selection" class="hidden max-h-64 overflow-y-auto border border-slate-100 rounded-2xl p-4 bg-slate-50/50 space-y-2">
+                <div id="manual-selection" class="hidden max-h-[400px] overflow-y-auto border-2 border-slate-50 rounded-3xl p-6 bg-slate-50/30 space-y-3 custom-scrollbar">
                     <?php foreach ($subscribers as $sub) : ?>
-                        <label class="flex items-center gap-3 p-2 hover:bg-white rounded-xl transition-colors cursor-pointer group">
-                            <input type="checkbox" class="recipient-checkbox rounded border-slate-300 text-primary focus:ring-primary" value="<?php echo $sub->id; ?>">
-                            <span class="text-sm font-bold text-slate-600 group-hover:text-slate-900"><?php echo esc_html($sub->email); ?></span>
+                        <label class="flex items-center gap-4 p-3 hover:bg-white rounded-2xl transition-all cursor-pointer group border-2 border-transparent hover:border-primary/20">
+                            <input type="checkbox" class="recipient-checkbox w-5 h-5 rounded-lg border-2 border-slate-200 text-primary focus:ring-primary" value="<?php echo $sub->id; ?>">
+                            <span class="text-sm font-black text-slate-600 group-hover:text-slate-900 truncate"><?php echo esc_html($sub->email); ?></span>
                         </label>
                     <?php endforeach; ?>
                 </div>
             </div>
 
-            <div class="card rounded-3xl p-8 bg-emerald-50 border border-emerald-100">
-                <div class="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg shadow-emerald-200">
-                    <span class="dashicons dashicons-shield-check"></span>
+            <div class="card rounded-[2.5rem] p-10 bg-emerald-50 border-0 shadow-lg shadow-emerald-100">
+                <div class="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center text-white mb-6 shadow-xl shadow-emerald-200">
+                    <span class="dashicons dashicons-shield-check" style="font-size: 28px; width: 28px; height: 28px;"></span>
                 </div>
-                <h4 class="text-emerald-900 font-black mb-2">Conformité RGPD</h4>
-                <p class="text-emerald-700/70 text-sm font-medium">Un lien de désinscription sera automatiquement ajouté en bas de chaque email pour respecter les normes européennes.</p>
+                <h4 class="text-emerald-900 text-xl font-black mb-3">Conformité RGPD</h4>
+                <p class="text-emerald-700/70 text-sm font-medium leading-relaxed">Un lien de désinscription sera automatiquement ajouté en bas de chaque email pour respecter les normes européennes.</p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Insert Posts Modal -->
-<div id="insertPostsModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl w-full max-w-4xl max-h-[80vh] flex flex-col shadow-2xl overflow-hidden">
-        <div class="p-8 border-b border-slate-100 flex justify-between items-center">
+<!-- Hyper Modern Post Insertion Modal -->
+<div id="insertPostsModal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[9999] flex items-center justify-center p-6">
+    <div class="bg-white rounded-[3rem] w-full max-w-5xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border-0">
+        <div class="p-10 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
             <div>
-                <h3 class="text-2xl font-black">Bibliothèque d'articles</h3>
-                <p class="text-slate-500 text-sm font-medium">Sélectionnez les contenus à importer dans votre campagne.</p>
+                <h3 class="text-3xl font-black text-slate-900 tracking-tight">Bibliothèque d'articles</h3>
+                <p class="text-slate-500 font-medium mt-1">Sélectionnez vos meilleurs contenus à partager.</p>
             </div>
-            <button class="w-10 h-10 rounded-full hover:bg-slate-100 transition-colors" onclick="document.getElementById('insertPostsModal').classList.add('hidden')">✕</button>
+            <button class="w-12 h-12 rounded-2xl bg-white border-2 border-slate-100 flex items-center justify-center hover:bg-rose-50 hover:border-rose-100 hover:text-rose-500 transition-all group" onclick="document.getElementById('insertPostsModal').classList.add('hidden')">
+                <span class="font-black text-xl">✕</span>
+            </button>
         </div>
-        <div id="posts-list" class="p-8 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <div id="posts-list" class="p-10 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 bg-white custom-scrollbar">
             <!-- Loaded via AJAX -->
         </div>
-        <div class="p-8 bg-slate-50 flex justify-end gap-4">
-            <button class="bg-white text-slate-900 border border-slate-200 px-6 py-3 rounded-xl font-bold hover:bg-slate-100" onclick="document.getElementById('insertPostsModal').classList.add('hidden')">Annuler</button>
-            <button id="confirm-insert-posts" class="bg-primary text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg shadow-primary/20">Insérer la sélection</button>
+
+        <div class="p-10 bg-slate-50/80 border-t border-slate-50 flex flex-col md:flex-row justify-between items-center gap-6">
+            <p class="text-slate-400 font-bold text-sm italic">Cochez les articles et cliquez sur insérer.</p>
+            <div class="flex gap-4 w-full md:w-auto">
+                <button class="flex-1 md:flex-none bg-white text-slate-900 border-2 border-slate-200 px-8 py-4 rounded-2xl font-black hover:bg-slate-100 transition-all" onclick="document.getElementById('insertPostsModal').classList.add('hidden')">Annuler</button>
+                <button id="confirm-insert-posts" class="flex-1 md:flex-none bg-[#121826] text-white px-10 py-4 rounded-2xl font-black hover:bg-primary hover:scale-105 transition-all shadow-xl shadow-slate-900/20">Insérer la sélection</button>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+.custom-scrollbar::-webkit-scrollbar { width: 8px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+</style>
 
 <script>
 jQuery(document).ready(function($) {
@@ -176,13 +194,10 @@ jQuery(document).ready(function($) {
         });
     }
 
-    // Modal behavior handled by inline onclicks for brevity in this template,
-    // but the AJAX for post fetching still uses jQuery below:
-
     $('[onclick*="insertPostsModal"]').on('click', function() {
         if($('#insertPostsModal').hasClass('hidden')) return;
 
-        $('#posts-list').html('<div class="col-span-full py-12 flex flex-col items-center"><div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div><p class="font-bold text-slate-400">Recherche de vos pépites...</p></div>');
+        $('#posts-list').html('<div class="col-span-full py-20 flex flex-col items-center"><div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-6"></div><p class="font-black text-slate-400 text-lg">Exploration de vos contenus...</p></div>');
         $.ajax({
             url: man_admin.ajax_url,
             type: 'POST',
@@ -195,11 +210,14 @@ jQuery(document).ready(function($) {
                     let html = '';
                     response.data.forEach(post => {
                         html += `
-                            <label class="flex items-start gap-4 p-4 border border-slate-100 rounded-2xl hover:border-primary/30 hover:bg-slate-50 transition-all cursor-pointer group">
-                                <input type="checkbox" class="post-select mt-1 rounded border-slate-300 text-primary focus:ring-primary" value="${post.id}" data-title="${post.title}" data-url="${post.url}" data-excerpt="${post.excerpt}" data-thumb="${post.thumbnail}">
+                            <label class="group relative bg-slate-50 border-2 border-transparent hover:border-primary/30 rounded-3xl p-6 transition-all cursor-pointer hover:bg-white hover:shadow-xl hover:shadow-primary/5 flex flex-col h-full">
+                                <input type="checkbox" class="post-select absolute top-4 right-4 w-6 h-6 rounded-lg border-2 border-slate-200 text-primary focus:ring-primary z-10" value="${post.id}" data-title="${post.title}" data-url="${post.url}" data-excerpt="${post.excerpt}" data-thumb="${post.thumbnail}">
+                                <div class="aspect-video rounded-2xl bg-slate-200 mb-4 overflow-hidden shadow-inner">
+                                    ${post.thumbnail ? `<img src="${post.thumbnail}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">` : `<div class="w-full h-full flex items-center justify-center text-slate-400 italic">No image</div>`}
+                                </div>
                                 <div class="flex-grow">
-                                    <h4 class="font-bold text-slate-700 leading-tight mb-1 group-hover:text-slate-900">${post.title}</h4>
-                                    <p class="text-xs text-slate-400 font-medium line-clamp-2">${post.excerpt}</p>
+                                    <h4 class="font-black text-slate-800 leading-tight mb-2 group-hover:text-primary transition-colors text-lg line-clamp-2">${post.title}</h4>
+                                    <p class="text-sm text-slate-400 font-medium line-clamp-3 leading-relaxed italic">${post.excerpt}</p>
                                 </div>
                             </label>
                         `;
@@ -211,15 +229,15 @@ jQuery(document).ready(function($) {
     });
 
     $('#confirm-insert-posts').on('click', function() {
-        let postsHtml = '<div class="man-posts-container" style="padding: 20px 0; font-family: sans-serif;">';
+        let postsHtml = '<div class="man-posts-container" style="padding: 20px 0; font-family: -apple-system, sans-serif;">';
         $('.post-select:checked').each(function() {
             const post = $(this).data();
             postsHtml += `
-                <div class="man-post-item" style="margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 30px;">
-                    ${post.thumb ? `<img src="${post.thumb}" style="width: 100%; max-width: 600px; height: auto; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">` : ''}
-                    <h2 style="margin: 0 0 12px 0; font-size: 26px; color: #111; font-weight: 800; line-height: 1.2;">${post.title}</h2>
-                    <p style="color: #444; font-size: 17px; line-height: 1.7; margin-bottom: 20px;">${post.excerpt}</p>
-                    <a href="${post.url}" style="display: inline-block; background-color: #f60; color: #fff; padding: 12px 28px; text-decoration: none; border-radius: 8px; font-weight: 800; font-size: 16px;">Lire l'article complet</a>
+                <div class="man-post-item" style="margin-bottom: 50px; border-bottom: 1px solid #f1f5f9; padding-bottom: 40px; text-align: left;">
+                    ${post.thumb ? `<img src="${post.thumb}" style="width: 100%; max-width: 600px; height: auto; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.08);">` : ''}
+                    <h2 style="margin: 0 0 15px 0; font-size: 28px; color: #0f172a; font-weight: 900; line-height: 1.2;">${post.title}</h2>
+                    <p style="color: #475569; font-size: 17px; line-height: 1.8; margin-bottom: 25px;">${post.excerpt}</p>
+                    <a href="${post.url}" style="display: inline-block; background-color: #f60; color: #fff; padding: 14px 32px; text-decoration: none; border-radius: 12px; font-weight: 800; font-size: 16px; box-shadow: 0 4px 12px rgba(255,102,0,0.3);">Découvrir l'article complet →</a>
                 </div>
             `;
         });
