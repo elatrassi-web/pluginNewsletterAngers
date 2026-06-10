@@ -41,6 +41,14 @@ class MAN_Stats {
                 $url = base64_decode(urldecode($_GET['url']));
 
                 if (filter_var($url, FILTER_VALIDATE_URL)) {
+                    // Check if the URL is internal to prevent open redirect
+                    $home_host = parse_url(home_url(), PHP_URL_HOST);
+                    $url_host = parse_url($url, PHP_URL_HOST);
+
+                    if ($home_host !== $url_host && !empty($url_host)) {
+                        wp_die("Redirection vers un domaine externe non autorisée.");
+                    }
+
                     self::log_action($nid, $sid, 'click', $url);
                     wp_redirect($url);
                 } else {

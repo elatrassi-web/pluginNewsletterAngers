@@ -1,101 +1,119 @@
-# Rapport de Présentation : Solution Newsletter "Angers Info"
+# Rapport de Projet : Solution Newsletter sur Mesure
 
-**Date :** 10 Juin 2024
+**Dates de développement :** 09/06/2024 et 10/06/2024
 **Projet :** My Angers Newsletter
 **Client :** Direction my-angers.info
-**Développeur :** Jules
 
 ---
 
-## 1. Introduction et Vision Stratégique
+## 1. Vision Stratégique et Objectifs
 
-Ce document présente la nouvelle solution de newsletter sur mesure développée pour **my-angers.info**. L'objectif principal était de remplacer les services tiers coûteux (comme Mailchimp à 85€/mois) par un outil propriétaire, intégré directement dans l'administration WordPress, offrant une autonomie totale et une expérience utilisateur futuriste.
+Le projet **My Angers Newsletter** est né de la volonté de s'affranchir des solutions propriétaires onéreuses tout en montant en gamme sur l'expérience utilisateur et l'automatisation.
 
-### Avantages Clés :
-- **Économie directe :** Suppression des frais d'abonnement mensuels.
-- **Intégration native :** Accès direct à tous les articles du site sans copier-coller.
-- **Performance :** Interface ultra-rapide basée sur les dernières technologies (Tailwind CSS).
-- **Conformité :** Gestion intégrée du RGPD et du Double Opt-in.
+### Bénéfices atteints :
+- **Économie Radicale :** Suppression du coût mensuel de 85€ (ex-Mailchimp), soit **1020€ d'économie annuelle**.
+- **Productivité :** Insertion d'articles en 2 clics au lieu d'un copier-coller manuel fastidieux.
+- **Souveraineté des données :** Contrôle total sur la base d'abonnés et les statistiques d'engagement.
 
 ---
 
-## 2. Le Tableau de Bord (Dashboard)
+## 2. Centre de Pilotage (Dashboard)
 
-Le centre de pilotage permet de visualiser en un coup d'œil la santé de votre audience.
+L'administration est conçue comme un cockpit futuriste, privilégiant la clarté et l'action rapide.
 
 ![Tableau de Bord](./images/tableau%20de%20bord.PNG)
 
-- **Indicateurs Temps Réel :** Suivi du nombre d'abonnés, des campagnes envoyées, et des taux d'ouverture/clic.
-- **Activité Récente :** Liste des dernières campagnes avec leur statut (Brouillon, Envoyé).
-- **Nouveaux Abonnés :** Visualisation rapide des dernières inscriptions.
+- **Statistiques Live :** Visualisation immédiate de l'engagement (Ouvertures et Clics) avec des indicateurs de performance.
+- **Activités Récentes :** Historique des envois avec indicateurs de statut (Draft, Sent).
 
 ---
 
-## 3. Gestion de l'Audience
+## 3. Gestion de l'Audience et Abonnés
 
-Une base de données propre et facile à gérer est essentielle.
+Un espace dédié permet une gestion granulaire de votre communauté.
 
 ![Gestion des Abonnés](./images/les%20abonnés.PNG)
 
-- **Import/Export :** Possibilité de migrer vos contacts via CSV en un clic.
-- **Ajout Manuel :** Interface épurée pour ajouter des abonnés individuellement.
-- **Statuts Transparents :** Distinction claire entre les abonnés actifs, en attente (pending) ou désinscrits.
+### Fonctionnalités Clés :
+- **Import/Export CSV :** Migration simplifiée de vos bases de données existantes.
+- **Filtrage Intelligent :** Visualisez rapidement les abonnés actifs vs désinscrits.
+- **Sélection Manuelle des Destinataires :** Lors de l'envoi, vous pouvez choisir d'envoyer à toute la base ou sélectionner manuellement des segments spécifiques.
+
+![Sélection Manuelle](./images/mail%20manuel.PNG)
 
 ---
 
-## 4. Studio Créatif : L'Art de Communiquer
+## 4. Le Studio Créatif : Éditeur de Campagnes
 
-L'interface de rédaction a été conçue pour être aussi puissante qu'un éditeur professionnel tout en restant intuitive.
+Cœur battant du plugin, le Studio permet de créer des mails visuellement riches sans aucune connaissance technique.
 
 ![Studio Créatif](./images/studio%20creatif.PNG)
 
-### Points forts :
-- **Importation Intelligente :** Un bouton dédié permet de parcourir les derniers articles du site.
-- **Sélection Visuelle :** Choisissez les articles à mettre en avant grâce à une fenêtre modale moderne.
+### L'intelligence au service du contenu :
+Fini le temps perdu à chercher les images et les liens de vos articles. Notre modal d'importation fait tout le travail pour vous.
 
 ![Articles Récents](./images/articles%20recent.PNG)
 
-- **Prévisualisation et Test :** Avant chaque envoi massif, vous pouvez envoyer un email de test pour valider le rendu visuel.
-
-![Vérifier l'envoi](./images/vérifier%20envoi.PNG)
+1. Ouvrez la bibliothèque d'articles.
+2. Cochez les sujets à diffuser.
+3. Cliquez sur "Insérer". C'est prêt.
 
 ---
 
-## 5. Automatisation et Configuration
+## 5. Automatisation et Intelligence Artificielle
 
-La solution travaille pour vous, même quand vous dormez.
+La solution intègre des triggers automatiques pour maintenir le lien avec votre audience.
 
 ![Configuration Système](./images/configuration.PNG)
 
-- **Alertes de Publication :** Envoi automatique dès qu'un article est mis en ligne.
-- **Récapitulatif Quotidien (Daily Digest) :** Un envoi groupé chaque jour à 18h00 pour ne rien manquer de l'actualité.
-- **Personnalisation de l'Apparence :** Choix entre plusieurs thèmes (Moderne, Classique, Minimaliste).
-
-![Choix du Thème](./images/théme.PNG)
+- **Mail de Bienvenue (Angers Press) :** Un contenu personnalisé envoyé instantanément après validation.
+- **Notification Post-Publication :** Alerte automatique des abonnés dès qu'un nouvel article est en ligne.
+- **Daily Digest :** Un récapitulatif élégant envoyé chaque soir à 18h00.
 
 ---
 
-## 6. Expérience Utilisateur et Conformité
+## 6. Expérience Abonné et Design Frontend
 
-Pour l'abonné, l'inscription est simple et sécurisante.
+La confiance de vos lecteurs est précieuse. Nous avons soigné chaque point de contact.
 
-- **Formulaire Footer :** Design moderne et discret intégré dans le bas de page du site.
+### Intégration Shortcode
+Un champ de saisie minimaliste et performant s'intègre parfaitement dans votre footer.
 
-![Design Formulaire](./images/Capture.PNG)
+![Formulaire Site](./images/Capture.PNG)
 
-- **Double Opt-in :** Un email de confirmation automatique garantit que chaque inscrit a bien validé son adresse.
+### Parcours de Validation (Double Opt-in)
+Protection contre le spam et garantie de qualité de la base de données.
 
 ![Mail de Confirmation](./images/mail%20de%20confirmation.PNG)
+*L'email reçu par l'utilisateur.*
 
-- **Désabonnement en 1 clic :** Un lien automatique est présent en bas de chaque email pour respecter les normes RGPD.
+![Confirmation Réussie](./images/confirmé.PNG)
+*La page de succès après clic sur le bouton.*
 
 ---
 
-## 7. Conclusion
+## 7. Statistiques et Thèmes
 
-Cette solution sur mesure transforme votre newsletter d'un coût récurrent en un atout stratégique performant. Le "Studio Créatif" réduit drastiquement le temps de préparation des campagnes, tandis que les automatismes assurent une présence constante auprès de votre audience angevine.
+Suivez vos performances et adaptez votre image de marque.
 
-**Prochaines étapes :**
-- Validation finale du rendu des mails sur mobiles.
-- Formation rapide à l'utilisation du Studio Créatif.
-- Lancement officiel de la première campagne "Angers Info".
+![Thèmes](./images/théme.PNG)
+
+- **Analyse des Clics :** Suivi précis des liens les plus consultés.
+- **Tracking 1x1 :** Pixel invisible pour mesurer le taux d'ouverture réel.
+- **Personnalisation :** Choisissez l'esthétique qui vous ressemble parmi les thèmes disponibles.
+
+![Statistiques Détaillées](./images/11111111.PNG)
+
+---
+
+## 8. Conformité et Sécurité
+
+- **Lien de Désinscription :** Présent et fonctionnel sur chaque envoi.
+- **Sécurité des Jetons :** Utilisation de tokens cryptographiques pour les actions d'abonnement/désabonnement.
+- **Optimisation Serveur :** Envoi optimisé pour ne pas impacter les performances de l'hébergement.
+
+---
+
+## Conclusion
+
+Ce développement livre un outil complet, autonome et évolutif, parfaitement aligné avec l'identité de **My Angers Info**.
