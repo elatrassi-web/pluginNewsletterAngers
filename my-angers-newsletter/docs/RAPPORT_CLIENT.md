@@ -117,3 +117,5 @@ Suivez vos performances et adaptez votre image de marque.
 ## Conclusion
 
 Ce développement livre un outil complet, autonome et évolutif, parfaitement aligné avec l'identité de **My Angers Info**.
+
+Je reste dans l'attente de vos remarques ou modifications éventuelles.
