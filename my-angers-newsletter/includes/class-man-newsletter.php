@@ -107,8 +107,9 @@ class MAN_Newsletter {
             $pixel = '';
         }
 
+        $logo_url = MAN_URL . 'assets/logo.jpg';
         $logo_html = '<div style="text-align:center; padding: 40px 0;">';
-        $logo_html .= '<h1 style="color:#f60; font-size: 32px; font-weight: 900; letter-spacing: -1px; margin:0; text-transform: uppercase; font-family: sans-serif;">Angers<span style="color:#121826; font-style: italic;">Info</span></h1>';
+        $logo_html .= '<img src="' . esc_url($logo_url) . '" alt="Angers Info" style="max-width: 280px; height: auto; display: inline-block;">';
         $logo_html .= '</div>';
 
         $footer_html = '<div style="margin-top:60px; padding:40px 20px; border-top:1px solid #f1f5f9; text-align:center;">';
