@@ -141,21 +141,30 @@ class MAN_Newsletter {
             case 'modern':
             default:
                 $final_html = '<html><body style="margin:0; padding:0; background-color:#f8fafc;">';
-                $final_html .= '<div style="background-color:#f8fafc; padding:60px 0;">';
-                $final_html .= '<div style="max-width:650px; margin:0 auto; background-color:#ffffff; border-radius:32px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">';
-                $final_html .= $logo_html;
-                $final_html .= '<div style="padding:0 60px 60px 60px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; color:#1e293b; font-size:17px; line-height:1.8;">';
-                $final_html .= '<div style="background-color:#f8fafc; border-radius:24px; padding:30px; margin-bottom:40px; border:1px solid #f1f5f9;">';
-                $final_html .= '<h2 style="margin:0; font-size:24px; font-weight:800; color:#0f172a; text-align:center;">' . esc_html($subject) . '</h2>';
+                $final_html .= '<div style="background-color:#f8fafc; padding:60px 20px;">';
+                $final_html .= '<div style="max-width:650px; margin:0 auto; background-color:#ffffff; border-radius:40px; overflow:hidden; box-shadow:0 30px 60px -12px rgba(0,0,0,0.1); border: 1px solid #f1f5f9;">';
+
+                // Gradient header area
+                $final_html .= '<div style="background: linear-gradient(135deg, #ffffff 0%, #fffbf5 100%); border-bottom: 1px solid #f1f5f9;">' . $logo_html . '</div>';
+
+                $final_html .= '<div style="padding:40px 60px 60px 60px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color:#1e293b; font-size:17px; line-height:1.8;">';
+                $final_html .= '<div style="background-color:#f8fafc; border-radius:30px; padding:40px; margin-bottom:50px; border:1px solid #f1f5f9; text-align:center;">';
+                $final_html .= '<h2 style="margin:0; font-size:28px; font-weight:900; color:#0f172a; letter-spacing: -0.5px;">' . esc_html($subject) . '</h2>';
                 $final_html .= '</div>';
                 $final_html .= $content;
                 $final_html .= '</div>';
-                $final_html .= '<div style="background-color:#121826; padding:60px;">';
-                $final_html .= '<div style="text-align:center; margin-bottom:30px;"><span style="color:#f60; font-weight:900; font-size:20px;">Angers Info</span></div>';
-                $final_html .= '<p style="color:#94a3b8; font-size:13px; text-align:center; line-height:1.6; font-family:sans-serif;">';
-                $final_html .= 'Cet email a été conçu avec passion pour les lecteurs d\'Angers.<br>';
-                $final_html .= '<a href="' . $unsubscribe_url . '" style="color:#ffffff; font-weight:bold; text-decoration:underline;">Gérer mon abonnement</a>';
-                $final_html .= '</p></div></div></div>' . $pixel . '</body></html>';
+
+                $final_html .= '<div style="background-color:#121826; padding:80px 60px; text-align:center;">';
+                $final_html .= '<div style="margin-bottom:40px;">';
+                $final_html .= '<span style="color:#f60; font-weight:900; font-size:24px; text-transform:uppercase; letter-spacing:2px;">Angers Info</span>';
+                $final_html .= '</div>';
+                $final_html .= '<p style="color:#64748b; font-size:14px; line-height:1.8; font-family:sans-serif; max-width:400px; margin:0 auto 30px auto;">';
+                $final_html .= 'Merci de faire partie de notre communauté. Nous nous efforçons de vous apporter le meilleur de l\'actualité locale chaque jour.';
+                $final_html .= '</p>';
+                $final_html .= '<div style="border-top:1px solid #1e293b; padding-top:30px;">';
+                $final_html .= '<p style="color:#475569; font-size:12px; font-family:sans-serif;">';
+                $final_html .= '<a href="' . $unsubscribe_url . '" style="color:#94a3b8; font-weight:bold; text-decoration:none; text-transform:uppercase; letter-spacing:1px;">Se désinscrire</a>';
+                $final_html .= '</p></div></div></div></div>' . $pixel . '</body></html>';
                 break;
         }
 

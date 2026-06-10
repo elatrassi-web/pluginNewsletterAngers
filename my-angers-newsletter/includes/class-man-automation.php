@@ -21,7 +21,6 @@ class MAN_Automation {
         $raw_content .= '</div>';
 
         $newsletter = new MAN_Newsletter();
-        // Force 'modern' for confirmation
         $content = $newsletter->prepare_email_content($raw_content, $subject, 0, null, 'modern');
         $headers = array('Content-Type: text/html; charset=UTF-8');
 
@@ -29,17 +28,45 @@ class MAN_Automation {
     }
 
     public static function send_welcome_email($email) {
-        $subject = "Bienvenue chez Angers Info !";
+        $subject = "Bienvenue dans l'aventure Angers Info ! 🚀";
 
-        $raw_content = '<div style="text-align:center; padding: 20px;">';
-        $raw_content .= '<div style="font-size:60px; margin-bottom:20px;">🎉</div>';
-        $raw_content .= '<h2 style="font-size:28px; font-weight:900; color:#121826; margin-bottom:20px;">C\'est officiel, bienvenue !</h2>';
-        $raw_content .= '<p style="font-size:18px; color:#475569; line-height:1.6;">Votre inscription est confirmée. Vous faites désormais partie de la communauté Angers Info.</p>';
-        $raw_content .= '<p style="font-size:18px; color:#475569; margin-top:20px;">Préparez-vous à recevoir le meilleur de l\'actualité locale directement dans votre boîte mail.</p>';
-        $raw_content .= '</div>';
+        $raw_content = '
+        <div style="text-align:center; padding: 40px 20px;">
+            <div style="font-size: 80px; margin-bottom: 30px; display: inline-block; line-height: 1;">🌟</div>
+
+            <h2 style="font-size: 36px; font-weight: 900; color: #121826; margin-bottom: 20px; letter-spacing: -1px; line-height: 1.1;">
+                C\'est le début d\'une <span style="color: #f60;">belle histoire.</span>
+            </h2>
+
+            <p style="font-size: 20px; color: #475569; line-height: 1.6; margin-bottom: 40px; font-weight: 500;">
+                Merci de nous avoir rejoint ! Vous faites maintenant partie d\'un cercle privilégié de lecteurs passionnés par l\'actualité d\'Angers.
+            </p>
+
+            <div style="background-color: #f8fafc; border-radius: 32px; padding: 40px; margin-bottom: 40px; border: 2px dashed #e2e8f0;">
+                <h3 style="font-size: 20px; font-weight: 800; color: #121826; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Au programme :</h3>
+                <ul style="text-align: left; list-style: none; padding: 0; margin: 0; display: inline-block;">
+                    <li style="margin-bottom: 15px; font-size: 17px; color: #64748b; font-weight: 600;">
+                        <span style="color: #f60; margin-right: 10px;">⚡</span> Les actualités brûlantes en temps réel
+                    </li>
+                    <li style="margin-bottom: 15px; font-size: 17px; color: #64748b; font-weight: 600;">
+                        <span style="color: #f60; margin-right: 10px;">📊</span> Des analyses exclusives sur notre région
+                    </li>
+                    <li style="margin-bottom: 0; font-size: 17px; color: #64748b; font-weight: 600;">
+                        <span style="color: #f60; margin-right: 10px;">📅</span> Le récapitulatif quotidien chaque soir à 18h
+                    </li>
+                </ul>
+            </div>
+
+            <p style="font-size: 18px; color: #475569; margin-bottom: 40px; italic: italic;">
+                "L\'information locale, augmentée par la passion."
+            </p>
+
+            <a href="' . home_url() . '" style="display: inline-block; background-color: #121826; color: #fff; padding: 22px 50px; text-decoration: none; border-radius: 24px; font-weight: 900; font-size: 18px; box-shadow: 0 20px 40px rgba(18,24,38,0.2); text-transform: uppercase; letter-spacing: 1px;">
+                Découvrir les derniers articles
+            </a>
+        </div>';
 
         $newsletter = new MAN_Newsletter();
-        // Force 'modern' for welcome
         $content = $newsletter->prepare_email_content($raw_content, $subject, 0, null, 'modern');
         $headers = array('Content-Type: text/html; charset=UTF-8');
 
