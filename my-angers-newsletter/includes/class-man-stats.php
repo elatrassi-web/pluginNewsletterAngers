@@ -49,9 +49,17 @@ class MAN_Stats {
                 exit;
             }
 
-            if ($action === 'unsubscribe' && $sid) {
+            if ($action === 'unsubscribe' && $sid && isset($_GET['token'])) {
                 global $wpdb;
                 $table = $wpdb->prefix . 'man_subscribers';
+                $token = sanitize_text_field($_GET['token']);
+
+                $subscriber = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE id = %d AND unsubscribe_token = %s", $sid, $token));
+
+                if (!$subscriber) {
+                    wp_die("Lien de désinscription invalide.");
+                }
+
                 $wpdb->update($table, array('status' => 'unsubscribed'), array('id' => $sid));
 
                 // Branded unsubscription page
@@ -95,7 +103,10 @@ class MAN_Stats {
     }
 
     public static function get_unsubscribe_url($subscriber_id) {
-        return home_url("/?man_track=unsubscribe&sid=$subscriber_id");
+        global $wpdb;
+        $table = $wpdb->prefix . 'man_subscribers';
+        $token = $wpdb->get_var($wpdb->prepare("SELECT unsubscribe_token FROM $table WHERE id = %d", $subscriber_id));
+        return home_url("/?man_track=unsubscribe&sid=$subscriber_id&token=$token");
     }
 }
 

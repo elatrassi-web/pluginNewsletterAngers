@@ -15,6 +15,7 @@ class MAN_DB {
             email varchar(100) NOT NULL,
             status varchar(20) DEFAULT 'pending' NOT NULL,
             token varchar(100) DEFAULT '',
+            unsubscribe_token varchar(100) DEFAULT '',
             created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
             PRIMARY KEY  (id),
             UNIQUE KEY email (email)

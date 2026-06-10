@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapport Newsletter Angers Info</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; line-height: 1.6; }
+        .page-break { page-break-after: always; }
+        .screenshot { border-radius: 1.5rem; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.1); border: 1px solid #f1f5f9; margin-bottom: 2rem; max-width: 100%; }
+        h1, h2, h3 { letter-spacing: -0.025em; }
+        .accent-text { color: #f60; }
+        @media print {
+            body { background-color: white; }
+            .no-print { display: none; }
+            .container { max-width: 100% !important; padding: 0 !important; }
+        }
+    </style>
+</head>
+<body class="py-12 px-4 md:px-0">
+    <div class="container mx-auto max-w-4xl bg-white shadow-2xl rounded-[3rem] overflow-hidden">
+
+        <!-- Header / Cover -->
+        <div class="bg-slate-900 text-white p-16 md:p-24 text-center">
+            <div class="mb-12">
+                <span class="bg-[#f60] text-white px-6 py-2 rounded-full font-black text-sm uppercase tracking-widest">Rapport de Projet</span>
+            </div>
+            <h1 class="text-6xl md:text-7xl font-black mb-6 leading-tight">Solution <span class="accent-text italic">Newsletter</span></h1>
+            <p class="text-2xl text-slate-400 font-medium max-w-2xl mx-auto">Développement d'un écosystème de communication sur mesure pour My Angers Info.</p>
+            <div class="mt-16 flex flex-col md:flex-row justify-center items-center gap-8 text-slate-500 font-bold uppercase tracking-widest text-sm">
+                <div>Date : 10 Juin 2024</div>
+                <div class="hidden md:block">•</div>
+                <div>Client : Direction My Angers</div>
+                <div class="hidden md:block">•</div>
+                <div>Auteur : Jules</div>
+            </div>
+        </div>
+
+        <div class="p-8 md:p-16 space-y-24">
+
+            <!-- Section 1 -->
+            <section>
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-12 h-1 bg-[#f60] rounded-full"></div>
+                    <h2 class="text-3xl font-black text-slate-900 uppercase tracking-tight">1. Vision & Objectifs</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div class="space-y-6">
+                        <p class="text-lg text-slate-600">Le projet <strong>My Angers Newsletter</strong> est né de la volonté de s'affranchir des solutions propriétaires onéreuses tout en montant en gamme sur l'expérience utilisateur.</p>
+                        <ul class="space-y-4">
+                            <li class="flex items-start gap-3">
+                                <span class="text-[#f60] font-black text-xl">✓</span>
+                                <div><span class="font-black">Économie Radicale :</span> Suppression du coût mensuel de 85€ (ex-Mailchimp).</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-[#f60] font-black text-xl">✓</span>
+                                <div><span class="font-black">Productivité :</span> Insertion d'articles en 2 clics au lieu d'un copier-coller manuel.</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-[#f60] font-black text-xl">✓</span>
+                                <div><span class="font-black">Data Ownership :</span> Contrôle total sur la base d'abonnés et les statistiques.</div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="bg-slate-50 rounded-3xl p-8 border border-slate-100">
+                        <div class="text-center">
+                            <div class="text-5xl font-black text-slate-900 mb-2">1 020 €</div>
+                            <div class="text-[#f60] font-bold uppercase text-xs tracking-widest mb-6">Économie annuelle estimée</div>
+                            <p class="text-slate-400 text-sm font-medium">Basé sur les tarifs actuels des services tiers pour une liste de 5 000 abonnés.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2 -->
+            <section>
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-12 h-1 bg-[#f60] rounded-full"></div>
+                    <h2 class="text-3xl font-black text-slate-900 uppercase tracking-tight">2. Centre de Pilotage</h2>
+                </div>
+                <p class="text-lg text-slate-600 mb-10">L'administration est conçue comme un cockpit futuriste, privilégiant la clarté et l'action rapide.</p>
+                <img src="./images/tableau%20de%20bord.PNG" alt="Dashboard" class="screenshot">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-slate-50 p-6 rounded-2xl">
+                        <h4 class="font-black text-slate-900 mb-2 italic underline decoration-[#f60] decoration-4 underline-offset-4">Statistiques Live</h4>
+                        <p class="text-sm text-slate-500 font-medium">Visualisation immédiate de l'engagement (Ouvertures et Clics) avec barres de progression dynamiques.</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-2xl">
+                        <h4 class="font-black text-slate-900 mb-2 italic underline decoration-[#f60] decoration-4 underline-offset-4">Activités Récentes</h4>
+                        <p class="text-sm text-slate-500 font-medium">Historique des envois avec indicateurs de statut (Draft, Sent) pour une gestion fluide des campagnes.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3 -->
+            <section>
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-12 h-1 bg-[#f60] rounded-full"></div>
+                    <h2 class="text-3xl font-black text-slate-900 uppercase tracking-tight">3. Le Studio Créatif</h2>
+                </div>
+                <p class="text-lg text-slate-600 mb-10">Cœur battant du plugin, le Studio permet de créer des mails visuellement riches sans aucune connaissance technique.</p>
+                <img src="./images/studio%20creatif.PNG" alt="Studio" class="screenshot">
+
+                <div class="bg-slate-900 rounded-[2.5rem] p-10 md:p-16 text-white overflow-hidden relative">
+                    <div class="relative z-10">
+                        <h3 class="text-3xl font-black mb-8">L'intelligence au service du contenu</h3>
+                        <p class="text-slate-400 text-lg mb-12">Fini le temps perdu à chercher les images et les liens de vos articles. Notre modal d'importation fait tout le travail pour vous.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <img src="./images/articles%20recent.PNG" alt="Import Articles" class="rounded-2xl border-2 border-white/10 shadow-2xl">
+                            <div class="flex flex-col justify-center">
+                                <h4 class="text-[#f60] font-black text-xl mb-4 italic">Processus en 3 étapes :</h4>
+                                <ul class="space-y-4 font-bold text-slate-300">
+                                    <li class="flex items-center gap-4"><span class="w-8 h-8 rounded-full bg-[#f60] flex items-center justify-center text-white text-xs">1</span> Ouvrez la bibliothèque d'articles.</li>
+                                    <li class="flex items-center gap-4"><span class="w-8 h-8 rounded-full bg-[#f60] flex items-center justify-center text-white text-xs">2</span> Cochez les sujets à diffuser.</li>
+                                    <li class="flex items-center gap-4"><span class="w-8 h-8 rounded-full bg-[#f60] flex items-center justify-center text-white text-xs">3</span> Cliquez sur "Insérer". C'est tout.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section>
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-12 h-1 bg-[#f60] rounded-full"></div>
+                    <h2 class="text-3xl font-black text-slate-900 uppercase tracking-tight">4. Expérience Abonné</h2>
+                </div>
+                <p class="text-lg text-slate-600 mb-10">La confiance de vos lecteurs est précieuse. Nous avons soigné chaque point de contact.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="col-span-1 space-y-6">
+                        <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
+                            <p class="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest text-center">Formulaire Site</p>
+                            <img src="./images/Capture.PNG" alt="Form" class="rounded-xl mx-auto">
+                        </div>
+                        <p class="text-sm text-slate-500 font-medium italic">Design ultra-minimaliste intégré dans le footer pour une conversion maximale sans intrusion.</p>
+                    </div>
+                    <div class="md:col-span-2 space-y-6">
+                        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                            <p class="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest text-center">Confirmation (Double Opt-in)</p>
+                            <img src="./images/mail%20de%20confirmation.PNG" alt="Mail Confirmation" class="rounded-xl h-64 w-full object-cover">
+                        </div>
+                        <p class="text-sm text-slate-500 font-medium italic">Garantit la qualité de votre base de données et évite d'être considéré comme spammeur.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 5 -->
+            <section>
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-12 h-1 bg-[#f60] rounded-full"></div>
+                    <h2 class="text-3xl font-black text-slate-900 uppercase tracking-tight">5. Conclusion & Futur</h2>
+                </div>
+                <div class="bg-slate-50 rounded-3xl p-12 text-center">
+                    <h3 class="text-2xl font-black mb-6">Le projet n'est qu'à son début.</h3>
+                    <p class="text-lg text-slate-600 mb-12 max-w-2xl mx-auto italic">"Nous avons construit les fondations d'un empire médiatique local performant, autonome et élégant."</p>
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <span class="bg-white px-6 py-3 rounded-2xl border border-slate-200 text-xs font-black uppercase tracking-widest text-slate-400">Version 1.0.0 Stable</span>
+                        <span class="bg-white px-6 py-3 rounded-2xl border border-slate-200 text-xs font-black uppercase tracking-widest text-emerald-500 italic">Optimisé Mobile</span>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <div class="p-12 bg-slate-50 border-t border-slate-100 text-center no-print">
+            <button onclick="window.print()" class="bg-slate-900 text-white px-10 py-5 rounded-2xl font-black text-xl hover:scale-105 transition-transform shadow-2xl shadow-slate-900/20">Exporter en PDF (Imprimer)</button>
+        </div>
+
+    </div>
+
+    <footer class="mt-12 text-center text-slate-400 font-bold text-sm uppercase tracking-[0.3em]">
+        © 2024 My Angers Info • Powered by Jules
+    </footer>
+
+</body>
+</html>

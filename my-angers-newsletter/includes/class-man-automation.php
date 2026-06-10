@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 
 class MAN_Automation {
     public function __construct() {
-        add_action('publish_post', array($this, 'handle_new_post_notification'), 10, 2);
+        add_action('transition_post_status', array($this, 'handle_post_status_transition'), 10, 3);
         add_action('man_daily_digest', array($this, 'send_daily_digest'));
     }
 
@@ -24,11 +24,11 @@ class MAN_Automation {
         $content = $newsletter->prepare_email_content($raw_content, $subject, 0, null, 'modern');
         $headers = array('Content-Type: text/html; charset=UTF-8');
 
-        wp_mail($email, $subject, $content, $headers);
+        MyAngersNewsletter::send_mail($email, $subject, $content, $headers);
     }
 
     public static function send_welcome_email($email) {
-        $subject = "Bienvenue dans l'aventure Angers Info ! 🚀";
+        $subject = "Bienvenue dans l'aventure Angers Press ! 🚀";
 
         $raw_content = '
         <div style="text-align:center; padding: 40px 20px;">
@@ -39,7 +39,7 @@ class MAN_Automation {
             </h2>
 
             <p style="font-size: 20px; color: #475569; line-height: 1.6; margin-bottom: 40px; font-weight: 500;">
-                Merci de nous avoir rejoint ! Vous faites maintenant partie d\'un cercle privilégié de lecteurs passionnés par l\'actualité d\'Angers.
+                Merci de nous avoir rejoint ! Vous faites maintenant partie d\'un cercle privilégié de lecteurs passionnés par l\'actualité d\'Angers avec <strong>Angers Press</strong>.
             </p>
 
             <div style="background-color: #f8fafc; border-radius: 32px; padding: 40px; margin-bottom: 40px; border: 2px dashed #e2e8f0;">
@@ -70,10 +70,14 @@ class MAN_Automation {
         $content = $newsletter->prepare_email_content($raw_content, $subject, 0, null, 'modern');
         $headers = array('Content-Type: text/html; charset=UTF-8');
 
-        wp_mail($email, $subject, $content, $headers);
+        MyAngersNewsletter::send_mail($email, $subject, $content, $headers);
     }
 
-    public function handle_new_post_notification($ID, $post) {
+    public function handle_post_status_transition($new_status, $old_status, $post) {
+        if ($new_status !== 'publish' || $old_status === 'publish' || $post->post_type !== 'post') {
+            return;
+        }
+
         if (get_option('man_auto_notify', '0') !== '1') {
             return;
         }
@@ -84,14 +88,14 @@ class MAN_Automation {
 
         if (!$subscribers) return;
 
-        $subject = "Nouvel article : " . get_the_title($ID);
-        $excerpt = wp_trim_words(get_the_excerpt($ID), 30);
-        $url = get_permalink($ID);
-        $thumb = get_the_post_thumbnail_url($ID, 'medium');
+        $subject = "Nouvel article : " . get_the_title($post->ID);
+        $excerpt = wp_trim_words(get_the_excerpt($post->ID), 30);
+        $url = get_permalink($post->ID);
+        $thumb = get_the_post_thumbnail_url($post->ID, 'medium');
 
         $raw_content = '<div style="text-align:center;">';
         if ($thumb) $raw_content .= '<img src="' . $thumb . '" style="width:100%; border-radius:12px; margin-bottom:20px;">';
-        $raw_content .= '<h2 style="font-size:24px; font-weight:800;">' . get_the_title($ID) . '</h2>';
+        $raw_content .= '<h2 style="font-size:24px; font-weight:800;">' . get_the_title($post->ID) . '</h2>';
         $raw_content .= '<p>' . $excerpt . '</p>';
         $raw_content .= '<a href="' . $url . '" style="display:inline-block; background-color:#f60; color:#fff; padding:12px 24px; text-decoration:none; border-radius:8px; font-weight:bold;">Lire la suite</a>';
         $raw_content .= '</div>';
@@ -101,7 +105,7 @@ class MAN_Automation {
         foreach ($subscribers as $sub) {
             $content = $newsletter->prepare_email_content($raw_content, $subject, 0, $sub);
             $headers = array('Content-Type: text/html; charset=UTF-8');
-            wp_mail($sub->email, $subject, $content, $headers);
+            MyAngersNewsletter::send_mail($sub->email, $subject, $content, $headers);
         }
     }
 
@@ -149,7 +153,7 @@ class MAN_Automation {
         foreach ($subscribers as $sub) {
             $content = $newsletter->prepare_email_content($grid_html, $subject, 0, $sub);
             $headers = array('Content-Type: text/html; charset=UTF-8');
-            wp_mail($sub->email, $subject, $content, $headers);
+            MyAngersNewsletter::send_mail($sub->email, $subject, $content, $headers);
         }
     }
 }

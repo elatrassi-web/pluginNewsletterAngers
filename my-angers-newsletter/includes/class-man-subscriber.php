@@ -55,10 +55,12 @@ class MAN_Subscriber {
         }
 
         $token = wp_generate_password(32, false);
+        $unsubscribe_token = wp_generate_password(32, false);
         $result = $wpdb->insert($table, array(
             'email' => $email,
             'status' => $status,
             'token' => $token,
+            'unsubscribe_token' => $unsubscribe_token,
             'created_at' => current_time('mysql')
         ));
 

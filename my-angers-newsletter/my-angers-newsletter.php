@@ -45,13 +45,24 @@ class MyAngersNewsletter {
     private function init_hooks() {
         register_activation_hook(__FILE__, array($this, 'activate'));
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
-
-        add_filter('wp_mail_from', array($this, 'mail_from'));
-        add_filter('wp_mail_from_name', array($this, 'mail_from_name'));
     }
 
     public function activate() {
         MAN_DB::create_tables();
+
+        // Ensure all existing subscribers have an unsubscribe token
+        global $wpdb;
+        $table = $wpdb->prefix . 'man_subscribers';
+        $subs = $wpdb->get_results("SELECT id FROM $table WHERE unsubscribe_token = '' OR unsubscribe_token IS NULL");
+        if ($subs) {
+            foreach ($subs as $sub) {
+                $wpdb->update($table,
+                    array('unsubscribe_token' => wp_generate_password(32, false)),
+                    array('id' => $sub->id)
+                );
+            }
+        }
+
         if (!wp_next_scheduled('man_daily_digest')) {
             wp_schedule_event(strtotime('18:00:00'), 'daily', 'man_daily_digest');
         }
@@ -61,11 +72,27 @@ class MyAngersNewsletter {
         wp_clear_scheduled_hook('man_daily_digest');
     }
 
-    public function mail_from($email) {
+    /**
+     * Centralized mail sending to apply custom branding only for newsletter-related emails.
+     */
+    public static function send_mail($to, $subject, $message, $headers = '', $attachments = array()) {
+        $instance = self::get_instance();
+        add_filter('wp_mail_from', array($instance, 'custom_mail_from'));
+        add_filter('wp_mail_from_name', array($instance, 'custom_mail_from_name'));
+
+        $result = wp_mail($to, $subject, $message, $headers, $attachments);
+
+        remove_filter('wp_mail_from', array($instance, 'custom_mail_from'));
+        remove_filter('wp_mail_from_name', array($instance, 'custom_mail_from_name'));
+
+        return $result;
+    }
+
+    public function custom_mail_from($email) {
         return 'newsletter@my-angers.info';
     }
 
-    public function mail_from_name($name) {
+    public function custom_mail_from_name($name) {
         return 'Angers Info';
     }
 }

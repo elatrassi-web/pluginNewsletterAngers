@@ -48,7 +48,7 @@ class MAN_Newsletter {
         foreach ($subscribers as $sub) {
             $content = $this->prepare_email_content($campaign->content, $campaign->subject, $campaign->id, $sub);
             $headers = array('Content-Type: text/html; charset=UTF-8');
-            if (wp_mail($sub->email, $campaign->subject, $content, $headers)) {
+            if (MyAngersNewsletter::send_mail($sub->email, $campaign->subject, $content, $headers)) {
                 $count++;
             }
         }
@@ -81,7 +81,7 @@ class MAN_Newsletter {
         $final_content = $this->prepare_email_content($content, $subject, 0, $sub);
         $headers = array('Content-Type: text/html; charset=UTF-8');
 
-        if (wp_mail($test_email, "[TEST] " . $subject, $final_content, $headers)) {
+        if (MyAngersNewsletter::send_mail($test_email, "[TEST] " . $subject, $final_content, $headers)) {
             wp_send_json_success('Email de test envoyé avec succès !');
         } else {
             wp_send_json_error("Erreur lors de l'envoi de l'email de test.");
@@ -148,7 +148,7 @@ class MAN_Newsletter {
                 // Gradient header area
                 $final_html .= '<div style="background: linear-gradient(135deg, #ffffff 0%, #fffbf5 100%); border-bottom: 1px solid #f1f5f9;">' . $logo_html . '</div>';
 
-                $final_html .= '<div style="padding:40px 60px 60px 60px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color:#1e293b; font-size:17px; line-height:1.8;">';
+                $final_html .= '<div style="padding:40px 60px 60px 60px; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif; color:#1e293b; font-size:17px; line-height:1.8;">';
                 $final_html .= '<div style="background-color:#f8fafc; border-radius:30px; padding:40px; margin-bottom:50px; border:1px solid #f1f5f9; text-align:center;">';
                 $final_html .= '<h2 style="margin:0; font-size:28px; font-weight:900; color:#0f172a; letter-spacing: -0.5px;">' . esc_html($subject) . '</h2>';
                 $final_html .= '</div>';
