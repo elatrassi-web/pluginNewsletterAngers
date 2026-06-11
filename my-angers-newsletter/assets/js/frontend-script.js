@@ -1,5 +1,5 @@
 jQuery(document).ready(function($) {
-    console.log("My Angers Newsletter: Frontend script version 1.1.0 loaded");
+    console.log("My Angers Newsletter: Frontend script version 1.1.2 loaded");
 
     function submitNewsletterForm($container) {
         const $modal = $container.find('.man-category-modal');
@@ -13,7 +13,6 @@ jQuery(document).ready(function($) {
         const $mainMessage = $container.find('.man-message');
         const $modalMessage = $container.find('.man-modal-message');
 
-        // Decide which message container to use
         const $activeMessage = isModalVisible ? $modalMessage : $mainMessage;
 
         const email = $emailInput.val();
@@ -54,12 +53,11 @@ jQuery(document).ready(function($) {
                     $activeMessage.removeClass('error').addClass('success').text(response.data);
 
                     if (isModalVisible) {
-                        // After success in modal, wait 2s, close modal, and show success in main area
                         setTimeout(function() {
                             $modal.addClass('man-modal-hidden');
                             $mainMessage.removeClass('error').addClass('success').text(response.data).show();
                             $emailInput.val('');
-                        }, 2500);
+                        }, 3000);
                     } else {
                         $emailInput.val('');
                     }
@@ -78,7 +76,6 @@ jQuery(document).ready(function($) {
         });
     }
 
-    // Event delegation for multiple forms
     $(document).on('submit', '.man-newsletter-form', function(e) {
         e.preventDefault();
         const $form = $(this);
@@ -88,23 +85,20 @@ jQuery(document).ready(function($) {
         if ($modal.length > 0) {
             console.log("Opening category selection modal...");
             $modal.removeClass('man-modal-hidden');
-            $container.find('.man-modal-message').addClass('man-modal-hidden').text('');
+            $container.find('.man-modal-message').addClass('man-modal-hidden').text('').hide();
             $container.find('.man-message').hide().text('');
         } else {
             submitNewsletterForm($container);
         }
     });
 
-    // Confirmation button in modal
     $(document).on('click', '.man-confirm-subscription', function(e) {
         e.preventDefault();
         e.stopImmediatePropagation();
-        console.log("User confirmed categories. Proceeding with AJAX...");
         const $container = $(this).closest('.man-newsletter-form-container');
         submitNewsletterForm($container);
     });
 
-    // Closing modal
     $(document).on('click', '.man-modal-close, .man-modal-overlay', function(e) {
         e.preventDefault();
         $(this).closest('.man-category-modal').addClass('man-modal-hidden');

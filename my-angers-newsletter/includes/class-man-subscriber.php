@@ -41,6 +41,9 @@ class MAN_Subscriber {
         }
     }
 
+    /**
+     * @return array|false Array with 'id' and 'type' or false on failure
+     */
     public static function add_subscriber($email, $status = 'pending', $categories = array()) {
         global $wpdb;
         $table = $wpdb->prefix . 'man_subscribers';
@@ -51,7 +54,6 @@ class MAN_Subscriber {
         if ($existing) {
             $update_data = array('categories' => $categories_str);
 
-            // If they were not active, we might want to update their status and trigger emails
             if ($existing->status !== 'active') {
                 $update_data['status'] = $status;
 
@@ -64,8 +66,14 @@ class MAN_Subscriber {
                 }
             }
 
-            $wpdb->update($table, $update_data, array('id' => $existing->id));
-            return $existing->id;
+            $result = $wpdb->update($table, $update_data, array('id' => $existing->id));
+
+            if ($result === false) {
+                error_log("MAN Newsletter Error: Failed to update subscriber " . $email . " - " . $wpdb->last_error);
+                return false;
+            }
+
+            return array('id' => $existing->id, 'type' => 'existing');
         }
 
         // New subscriber
@@ -87,9 +95,10 @@ class MAN_Subscriber {
             } elseif ($status === 'active') {
                 MAN_Automation::send_welcome_email($email);
             }
-            return $subscriber_id;
+            return array('id' => $subscriber_id, 'type' => 'new');
         }
 
+        error_log("MAN Newsletter Error: Failed to insert subscriber " . $email . " - " . $wpdb->last_error);
         return false;
     }
 
@@ -118,20 +127,29 @@ class MAN_Subscriber {
             wp_send_json_error('Veuillez saisir une adresse email valide.');
         }
 
-        $subscriber_id = self::add_subscriber($email, $status, $categories);
+        $result = self::add_subscriber($email, $status, $categories);
 
-        if ($subscriber_id) {
+        if ($result && isset($result['id'])) {
             if ($is_admin_request) {
                 wp_send_json_success('Abonné enregistré avec succès !');
             } else {
-                if ($status === 'pending') {
-                    wp_send_json_success('Merci ! Merci de confirmer votre inscription via le mail que nous venons de vous envoyer.');
+                if ($result['type'] === 'existing') {
+                    wp_send_json_success('Vous êtes déjà inscrit ! Vos préférences d\'édition ont été mises à jour.');
                 } else {
-                    wp_send_json_success('Félicitations, vous êtes maintenant bien inscrit !');
+                    if ($status === 'pending') {
+                        wp_send_json_success('Merci ! Veuillez confirmer votre inscription via le mail envoyé.');
+                    } else {
+                        wp_send_json_success('Félicitations, vous êtes maintenant bien inscrit !');
+                    }
                 }
             }
         } else {
-            wp_send_json_error('Une erreur est survenue lors de l\'enregistrement. Veuillez réessayer ou nous contacter.');
+            global $wpdb;
+            $error_msg = 'Une erreur est survenue lors de l\'enregistrement.';
+            if (current_user_can('manage_options')) {
+                $error_msg .= ' Erreur DB : ' . $wpdb->last_error;
+            }
+            wp_send_json_error($error_msg);
         }
     }
 
