@@ -47,31 +47,28 @@ class MAN_Subscriber {
         $categories_str = !empty($categories) ? maybe_serialize($categories) : null;
 
         $existing = $wpdb->get_row($wpdb->prepare("SELECT id, status FROM $table WHERE email = %s", $email));
+
         if ($existing) {
-            // Update categories and status if it was unsubscribed or pending
-            if ($existing->status === 'unsubscribed' || $existing->status === 'pending') {
-                $wpdb->update($table, array(
-                    'status' => $status,
-                    'categories' => $categories_str
-                ), array('id' => $existing->id));
+            $update_data = array('categories' => $categories_str);
+
+            // If they were not active, we might want to update their status and trigger emails
+            if ($existing->status !== 'active') {
+                $update_data['status'] = $status;
 
                 if ($status === 'pending' && get_option('man_double_optin', '1') === '1') {
                     $token = wp_generate_password(32, false);
-                    $wpdb->update($table, array('token' => $token), array('id' => $existing->id));
+                    $update_data['token'] = $token;
                     MAN_Automation::send_confirmation_email($email, $token);
                 } elseif ($status === 'active') {
                     MAN_Automation::send_welcome_email($email);
                 }
-                return $existing->id;
             }
-            // If already active, just update categories but don't re-send welcome
-            if ($existing->status === 'active') {
-                $wpdb->update($table, array('categories' => $categories_str), array('id' => $existing->id));
-                return $existing->id;
-            }
-            return false;
+
+            $wpdb->update($table, $update_data, array('id' => $existing->id));
+            return $existing->id;
         }
 
+        // New subscriber
         $token = wp_generate_password(32, false);
         $unsubscribe_token = wp_generate_password(32, false);
         $result = $wpdb->insert($table, array(
@@ -106,10 +103,9 @@ class MAN_Subscriber {
             check_ajax_referer('man_admin_nonce', 'nonce');
             $status = 'active';
         } else {
-            // Check frontend nonce if provided, but allow flexible use
-            if (isset($_POST['nonce'])) {
+            if (!empty($_POST['nonce'])) {
                 if (!wp_verify_nonce($_POST['nonce'], 'man_frontend_nonce')) {
-                    wp_send_json_error('Erreur de sécurité. Veuillez rafraîchir la page.');
+                    wp_send_json_error('Session expirée. Veuillez rafraîchir la page.');
                 }
             }
             $status = (get_option('man_double_optin', '1') === '1') ? 'pending' : 'active';
@@ -126,16 +122,16 @@ class MAN_Subscriber {
 
         if ($subscriber_id) {
             if ($is_admin_request) {
-                wp_send_json_success('Abonné ajouté avec succès !');
+                wp_send_json_success('Abonné enregistré avec succès !');
             } else {
                 if ($status === 'pending') {
-                    wp_send_json_success('Merci ! Veuillez vérifier votre boîte mail pour confirmer votre inscription.');
+                    wp_send_json_success('Merci ! Merci de confirmer votre inscription via le mail que nous venons de vous envoyer.');
                 } else {
-                    wp_send_json_success('Félicitations, vous êtes maintenant inscrit à notre newsletter !');
+                    wp_send_json_success('Félicitations, vous êtes maintenant bien inscrit !');
                 }
             }
         } else {
-            wp_send_json_error('Vous êtes déjà inscrit ou une erreur est survenue.');
+            wp_send_json_error('Une erreur est survenue lors de l\'enregistrement. Veuillez réessayer ou nous contacter.');
         }
     }
 
