@@ -25,14 +25,23 @@ class MAN_Frontend {
             <form id="man-newsletter-form">
                 <div class="man-d-flex">
                     <input type="email" name="email" id="man-email" placeholder="Votre E-mail" required>
-                    <button type="submit" id="man-submit">
+                    <button type="submit" id="man-submit-trigger">
                         <span class="man-icon">🔔</span> Je m'abonne
                     </button>
                 </div>
+            </form>
+            <div id="man-message"></div>
 
-                <?php if (!empty($enabled_categories)) : ?>
-                <div class="man-category-selection">
-                    <p class="man-category-title">Choisissez vos éditions (départements) :</p>
+            <?php if (!empty($enabled_categories)) : ?>
+            <!-- Category Selection Modal -->
+            <div id="man-category-modal" class="man-modal-hidden">
+                <div class="man-modal-overlay"></div>
+                <div class="man-modal-content">
+                    <div class="man-modal-header">
+                        <h3>Personnalisez <span class="highlight">votre actu</span></h3>
+                        <p>Sélectionnez les éditions (départements) qui vous intéressent.</p>
+                        <button type="button" class="man-modal-close">✕</button>
+                    </div>
                     <div class="man-category-grid">
                         <?php foreach ($enabled_categories as $cat_id) :
                             $cat = get_category($cat_id);
@@ -40,15 +49,42 @@ class MAN_Frontend {
                         ?>
                             <label class="man-category-label">
                                 <input type="checkbox" name="categories[]" value="<?php echo $cat_id; ?>" checked>
-                                <span><?php echo esc_html($cat->name); ?></span>
+                                <span class="man-cat-name"><?php echo esc_html($cat->name); ?></span>
                             </label>
                         <?php endforeach; ?>
                     </div>
+                    <div class="man-modal-footer">
+                        <button type="button" id="man-confirm-subscription">Confirmer l'inscription</button>
+                    </div>
                 </div>
-                <?php endif; ?>
-            </form>
-            <div id="man-message"></div>
+            </div>
+            <?php endif; ?>
         </div>
+
+        <style>
+            #man-category-modal.man-modal-hidden { display: none; }
+            #man-category-modal { position: fixed; inset: 0; z-index: 999999; display: flex; align-items: center; justify-content: center; padding: 20px; font-family: 'Plus Jakarta Sans', sans-serif; }
+            .man-modal-overlay { position: absolute; inset: 0; bg-color: #0f172a; opacity: 0.9; backdrop-filter: blur(8px); background: rgba(15, 23, 42, 0.9); }
+            .man-modal-content { position: relative; background: white; border-radius: 30px; width: 100%; max-width: 600px; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); color: #0f172a; }
+            .man-modal-header { text-align: center; margin-bottom: 30px; }
+            .man-modal-header h3 { font-size: 28px; font-weight: 900; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: -1px; }
+            .man-modal-header h3 .highlight { color: #f60; font-style: italic; }
+            .man-modal-header p { color: #64748b; font-weight: 500; font-size: 15px; }
+            .man-modal-close { position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 10px; cursor: pointer; font-weight: bold; color: #64748b; }
+
+            .man-modal-content .man-category-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-height: 300px; overflow-y: auto; padding-right: 10px; margin-bottom: 30px; }
+            .man-modal-content .man-category-grid::-webkit-scrollbar { width: 6px; }
+            .man-modal-content .man-category-grid::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+            .man-modal-content .man-category-label { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 12px 15px; border-radius: 12px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+            .man-modal-content .man-category-label:hover { background: #f1f5f9; border-color: #f603; }
+            .man-modal-content .man-category-label input:checked + .man-cat-name { color: #f60; font-weight: 800; }
+            .man-modal-content .man-category-label input { width: 18px; height: 18px; accent-color: #f60; }
+            .man-modal-content .man-cat-name { font-size: 14px; font-weight: 600; color: #475569; }
+
+            #man-confirm-subscription { width: 100%; background: #121826; color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 800; font-size: 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; }
+            #man-confirm-subscription:hover { background: #f60; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(246, 102, 0, 0.3); }
+        </style>
         <?php
         return ob_get_clean();
     }

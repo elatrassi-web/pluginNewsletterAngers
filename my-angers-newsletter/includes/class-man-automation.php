@@ -16,7 +16,7 @@ class MAN_Automation {
 
         $raw_content = '<div style="text-align:center; padding: 20px;">';
         $raw_content .= '<h2 style="font-size:24px; font-weight:800; color:#121826;">Dernière étape !</h2>';
-        $raw_content .= '<p style="font-size:18px; color:#475569; margin-bottom:30px;">Merci de vous être inscrit. Cliquez sur le bouton ci-dessous pour valider votre adresse email.</p>';
+        $raw_content .= '<p style="font-size:18px; color:#475569; margin-bottom:30px;">Merci de vous être inscrit et d\'avoir choisi vos éditions. Cliquez sur le bouton ci-dessous pour valider votre adresse email et commencer à recevoir votre actu personnalisée.</p>';
         $raw_content .= '<a href="' . $confirm_url . '" style="display:inline-block; background-color:#f60; color:#fff; padding:18px 40px; text-decoration:none; border-radius:20px; font-weight:900; font-size:18px; box-shadow:0 15px 30px rgba(255,102,0,0.3);">Confirmer mon inscription</a>';
         $raw_content .= '</div>';
 

@@ -1,16 +1,39 @@
 jQuery(document).ready(function($) {
-    $('#man-newsletter-form').on('submit', function(e) {
-        e.preventDefault();
+    const $modal = $('#man-category-modal');
+    const $form = $('#man-newsletter-form');
+    const $trigger = $('#man-submit-trigger');
+    const $confirm = $('#man-confirm-subscription');
+    const $message = $('#man-message');
 
+    $form.on('submit', function(e) {
+        e.preventDefault();
+        const email = $('#man-email').val();
+        if (!email) return;
+
+        if ($modal.length > 0) {
+            $modal.removeClass('man-modal-hidden');
+        } else {
+            submitForm();
+        }
+    });
+
+    $('.man-modal-close, .man-modal-overlay').on('click', function() {
+        $modal.addClass('man-modal-hidden');
+    });
+
+    $confirm.on('click', function() {
+        submitForm();
+    });
+
+    function submitForm() {
         const email = $('#man-email').val();
         const categories = [];
         $('input[name="categories[]"]:checked').each(function() {
             categories.push($(this).val());
         });
-        const $message = $('#man-message');
-        const $submit = $('#man-submit');
 
-        $submit.prop('disabled', true).css('opacity', '0.7');
+        $confirm.prop('disabled', true).text('Patientez...');
+        $trigger.prop('disabled', true).css('opacity', '0.7');
         $message.removeClass('error success').text('Envoi en cours...');
 
         $.ajax({
@@ -25,6 +48,7 @@ jQuery(document).ready(function($) {
                 if (response.success) {
                     $message.addClass('success').text(response.data);
                     $('#man-email').val('');
+                    $modal.addClass('man-modal-hidden');
                 } else {
                     $message.addClass('error').text(response.data);
                 }
@@ -33,8 +57,9 @@ jQuery(document).ready(function($) {
                 $message.addClass('error').text('Une erreur est survenue.');
             },
             complete: function() {
-                $submit.prop('disabled', false).css('opacity', '1');
+                $confirm.prop('disabled', false).text("Confirmer l'inscription");
+                $trigger.prop('disabled', false).css('opacity', '1');
             }
         });
-    });
+    }
 });
