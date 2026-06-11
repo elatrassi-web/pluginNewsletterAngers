@@ -41,9 +41,6 @@ class MAN_Subscriber {
         }
     }
 
-    /**
-     * @return array|false Array with 'id' and 'type' or false on failure
-     */
     public static function add_subscriber($email, $status = 'pending', $categories = array()) {
         global $wpdb;
         $table = $wpdb->prefix . 'man_subscribers';
@@ -69,7 +66,7 @@ class MAN_Subscriber {
             $result = $wpdb->update($table, $update_data, array('id' => $existing->id));
 
             if ($result === false) {
-                error_log("MAN Newsletter Error: Failed to update subscriber " . $email . " - " . $wpdb->last_error);
+                error_log("MAN Newsletter Error (Update): " . $wpdb->last_error . " | Data: " . print_r($update_data, true));
                 return false;
             }
 
@@ -79,14 +76,16 @@ class MAN_Subscriber {
         // New subscriber
         $token = wp_generate_password(32, false);
         $unsubscribe_token = wp_generate_password(32, false);
-        $result = $wpdb->insert($table, array(
+        $insert_data = array(
             'email' => $email,
             'status' => $status,
             'token' => $token,
             'unsubscribe_token' => $unsubscribe_token,
             'categories' => $categories_str,
             'created_at' => current_time('mysql')
-        ));
+        );
+
+        $result = $wpdb->insert($table, $insert_data);
 
         if ($result) {
             $subscriber_id = $wpdb->insert_id;
@@ -98,11 +97,12 @@ class MAN_Subscriber {
             return array('id' => $subscriber_id, 'type' => 'new');
         }
 
-        error_log("MAN Newsletter Error: Failed to insert subscriber " . $email . " - " . $wpdb->last_error);
+        error_log("MAN Newsletter Error (Insert): " . $wpdb->last_error . " | Data: " . print_r($insert_data, true));
         return false;
     }
 
     public function ajax_add_subscriber() {
+        global $wpdb;
         $is_admin_request = !empty($_POST['is_admin']) && $_POST['is_admin'] === '1';
 
         if ($is_admin_request) {
@@ -134,7 +134,7 @@ class MAN_Subscriber {
                 wp_send_json_success('Abonné enregistré avec succès !');
             } else {
                 if ($result['type'] === 'existing') {
-                    wp_send_json_success('Vous êtes déjà inscrit ! Vos préférences d\'édition ont été mises à jour.');
+                    wp_send_json_success('Vous êtes déjà inscrit ! Vos préférences ont été mises à jour.');
                 } else {
                     if ($status === 'pending') {
                         wp_send_json_success('Merci ! Veuillez confirmer votre inscription via le mail envoyé.');
@@ -144,12 +144,13 @@ class MAN_Subscriber {
                 }
             }
         } else {
-            global $wpdb;
-            $error_msg = 'Une erreur est survenue lors de l\'enregistrement.';
-            if (current_user_can('manage_options')) {
-                $error_msg .= ' Erreur DB : ' . $wpdb->last_error;
+            $msg = 'Une erreur est survenue lors de l\'enregistrement.';
+            if (!empty($wpdb->last_error)) {
+                $msg .= ' DB Error: ' . $wpdb->last_error;
+            } else {
+                $msg .= ' (Erreur inconnue, veuillez vérifier les logs PHP)';
             }
-            wp_send_json_error($error_msg);
+            wp_send_json_error($msg);
         }
     }
 

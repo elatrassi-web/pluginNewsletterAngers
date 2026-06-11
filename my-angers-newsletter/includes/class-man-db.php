@@ -17,7 +17,7 @@ class MAN_DB {
             token varchar(100) DEFAULT '',
             unsubscribe_token varchar(100) DEFAULT '',
             categories longtext DEFAULT NULL,
-            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            created_at datetime NOT NULL,
             PRIMARY KEY  (id),
             UNIQUE KEY email (email)
         ) $charset_collate;";
@@ -29,7 +29,7 @@ class MAN_DB {
             content longtext NOT NULL,
             status varchar(20) DEFAULT 'draft' NOT NULL,
             sent_at datetime DEFAULT NULL,
-            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            created_at datetime NOT NULL,
             PRIMARY KEY  (id)
         ) $charset_collate;";
 
@@ -42,7 +42,7 @@ class MAN_DB {
             clicked_url text DEFAULT NULL,
             ip_address varchar(45) DEFAULT NULL,
             user_agent text DEFAULT NULL,
-            timestamp datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            timestamp datetime NOT NULL,
             PRIMARY KEY  (id)
         ) $charset_collate;";
 
@@ -50,5 +50,23 @@ class MAN_DB {
         dbDelta($sql_subscribers);
         dbDelta($sql_newsletters);
         dbDelta($sql_stats);
+
+        self::check_columns();
+    }
+
+    public static function check_columns() {
+        global $wpdb;
+        $table_subscribers = $wpdb->prefix . 'man_subscribers';
+
+        $columns = $wpdb->get_col("SHOW COLUMNS FROM $table_subscribers", 0);
+
+        if (!empty($columns)) {
+            if (!in_array('unsubscribe_token', $columns)) {
+                $wpdb->query("ALTER TABLE $table_subscribers ADD unsubscribe_token varchar(100) DEFAULT '' AFTER token");
+            }
+            if (!in_array('categories', $columns)) {
+                $wpdb->query("ALTER TABLE $table_subscribers ADD categories longtext DEFAULT NULL AFTER unsubscribe_token");
+            }
+        }
     }
 }
