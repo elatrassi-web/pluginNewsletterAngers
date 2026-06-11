@@ -48,11 +48,25 @@ class MAN_Subscriber {
 
         $existing = $wpdb->get_row($wpdb->prepare("SELECT id, status FROM $table WHERE email = %s", $email));
         if ($existing) {
-            if ($existing->status === 'unsubscribed' || $existing->status === 'active' || $existing->status === 'pending') {
+            // Update categories and status if it was unsubscribed or pending
+            if ($existing->status === 'unsubscribed' || $existing->status === 'pending') {
                 $wpdb->update($table, array(
                     'status' => $status,
                     'categories' => $categories_str
                 ), array('id' => $existing->id));
+
+                if ($status === 'pending' && get_option('man_double_optin', '1') === '1') {
+                    $token = wp_generate_password(32, false);
+                    $wpdb->update($table, array('token' => $token), array('id' => $existing->id));
+                    MAN_Automation::send_confirmation_email($email, $token);
+                } elseif ($status === 'active') {
+                    MAN_Automation::send_welcome_email($email);
+                }
+                return $existing->id;
+            }
+            // If already active, just update categories but don't re-send welcome
+            if ($existing->status === 'active') {
+                $wpdb->update($table, array('categories' => $categories_str), array('id' => $existing->id));
                 return $existing->id;
             }
             return false;
@@ -83,7 +97,6 @@ class MAN_Subscriber {
     }
 
     public function ajax_add_subscriber() {
-        // Distinguish between admin manual add and frontend signup
         $is_admin_request = !empty($_POST['is_admin']) && $_POST['is_admin'] === '1';
 
         if ($is_admin_request) {
@@ -93,8 +106,12 @@ class MAN_Subscriber {
             check_ajax_referer('man_admin_nonce', 'nonce');
             $status = 'active';
         } else {
-            // Frontend nonce check (optional but recommended)
-            // For simplicity and accessibility, we allow frontend signup without admin nonce
+            // Check frontend nonce if provided, but allow flexible use
+            if (isset($_POST['nonce'])) {
+                if (!wp_verify_nonce($_POST['nonce'], 'man_frontend_nonce')) {
+                    wp_send_json_error('Erreur de sécurité. Veuillez rafraîchir la page.');
+                }
+            }
             $status = (get_option('man_double_optin', '1') === '1') ? 'pending' : 'active';
         }
 
@@ -102,13 +119,21 @@ class MAN_Subscriber {
         $categories = isset($_POST['categories']) ? array_map('intval', $_POST['categories']) : array();
 
         if (!is_email($email)) {
-            wp_send_json_error('Email invalide');
+            wp_send_json_error('Veuillez saisir une adresse email valide.');
         }
 
         $subscriber_id = self::add_subscriber($email, $status, $categories);
 
         if ($subscriber_id) {
-            wp_send_json_success($is_admin_request ? 'Abonné ajouté !' : 'Merci pour votre inscription !');
+            if ($is_admin_request) {
+                wp_send_json_success('Abonné ajouté avec succès !');
+            } else {
+                if ($status === 'pending') {
+                    wp_send_json_success('Merci ! Veuillez vérifier votre boîte mail pour confirmer votre inscription.');
+                } else {
+                    wp_send_json_success('Félicitations, vous êtes maintenant inscrit à notre newsletter !');
+                }
+            }
         } else {
             wp_send_json_error('Vous êtes déjà inscrit ou une erreur est survenue.');
         }

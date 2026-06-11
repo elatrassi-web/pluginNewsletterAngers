@@ -3,7 +3,7 @@
  * Plugin Name: My Angers Newsletter
  * Plugin URI: https://my-angers.info
  * Description: Un outil complet de gestion de newsletter pour my-angers.info, incluant la gestion des abonnés, l'automatisation et des statistiques.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Jules
  * Text Domain: my-angers-newsletter
  */
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 
 define('MAN_PATH', plugin_dir_path(__FILE__));
 define('MAN_URL', plugin_dir_url(__FILE__));
-define('MAN_VERSION', '1.0.0');
+define('MAN_VERSION', '1.1.0');
 
 // Main class
 class MyAngersNewsletter {

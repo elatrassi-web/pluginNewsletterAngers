@@ -3,7 +3,7 @@
     max-width: 600px;
 }
 
-#man-newsletter-form {
+.man-newsletter-form {
     display: block;
 }
 
@@ -13,7 +13,7 @@
     align-items: stretch;
 }
 
-#man-email {
+.man-email {
     flex-grow: 1;
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.5);
@@ -24,11 +24,11 @@
     outline: none;
 }
 
-#man-email::placeholder {
+.man-email::placeholder {
     color: rgba(255, 255, 255, 0.8);
 }
 
-#man-submit {
+.man-submit-trigger {
     background-color: #f60; /* Orange color from screenshot */
     color: #fff;
     border: none;
@@ -44,7 +44,7 @@
     white-space: nowrap;
 }
 
-#man-submit:hover {
+.man-submit-trigger:hover {
     background-color: #e55a00;
 }
 
@@ -52,17 +52,17 @@
     font-size: 18px;
 }
 
-#man-message {
+.man-message {
     margin-top: 10px;
     font-size: 14px;
     color: #fff;
 }
 
-#man-message.error {
+.man-message.error {
     color: #ff4d4d;
 }
 
-#man-message.success {
+.man-message.success {
     color: #4BB543;
 }
 

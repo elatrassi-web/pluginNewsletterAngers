@@ -69,6 +69,7 @@ La solution intègre des triggers automatiques pour maintenir le lien avec votre
 - **Mail de Bienvenue (Angers Press) :** Un contenu personnalisé envoyé instantanément après validation.
 - **Notification Post-Publication :** Alerte automatique des abonnés dès qu'un nouvel article est en ligne.
 - **Daily Digest Intelligent :** Un récapitulatif élégant envoyé chaque soir à 18h00, personnalisé selon les départements choisis par chaque abonné. Si aucun article n'est publié dans ses sections, aucun mail n'est envoyé pour éviter de polluer sa boîte.
+- **Expérience Interactive :** Un popup moderne après la saisie de l'email permet une segmentation immédiate et fluide.
 
 ---
 

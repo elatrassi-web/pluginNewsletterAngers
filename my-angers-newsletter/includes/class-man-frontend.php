@@ -14,7 +14,10 @@ class MAN_Frontend {
     public function enqueue_assets() {
         wp_enqueue_style('man-frontend', MAN_URL . 'assets/css/frontend-style.css', array(), MAN_VERSION);
         wp_enqueue_script('man-frontend', MAN_URL . 'assets/js/frontend-script.js', array('jquery'), MAN_VERSION, true);
-        wp_localize_script('man-frontend', 'man_ajax', array('url' => admin_url('admin-ajax.php')));
+        wp_localize_script('man-frontend', 'man_ajax', array(
+            'url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('man_frontend_nonce')
+        ));
     }
 
     public function render_shortcode() {
@@ -22,27 +25,30 @@ class MAN_Frontend {
         ob_start();
         ?>
         <div class="man-newsletter-form-container">
-            <form id="man-newsletter-form">
+            <form class="man-newsletter-form" method="POST">
                 <div class="man-d-flex">
-                    <input type="email" name="email" id="man-email" placeholder="Votre E-mail" required>
-                    <button type="submit" id="man-submit-trigger">
+                    <input type="email" name="email" class="man-email" placeholder="Votre E-mail" required>
+                    <button type="submit" class="man-submit-trigger">
                         <span class="man-icon">🔔</span> Je m'abonne
                     </button>
                 </div>
             </form>
-            <div id="man-message"></div>
+            <div class="man-message"></div>
 
             <?php if (!empty($enabled_categories)) : ?>
             <!-- Category Selection Modal -->
-            <div id="man-category-modal" class="man-modal-hidden">
+            <div class="man-category-modal man-modal-hidden">
                 <div class="man-modal-overlay"></div>
                 <div class="man-modal-content">
                     <div class="man-modal-header">
-                        <h3>Personnalisez <span class="highlight">votre actu</span></h3>
-                        <p>Sélectionnez les éditions (départements) qui vous intéressent.</p>
-                        <button type="button" class="man-modal-close">✕</button>
+                        <h3 class="man-modal-title">Personnalisez <span class="highlight">votre actu</span></h3>
+                        <p class="man-modal-subtitle">Sélectionnez les éditions (départements) qui vous intéressent.</p>
+                        <button type="button" class="man-modal-close" title="Fermer">✕</button>
                     </div>
-                    <div class="man-category-grid">
+
+                    <div class="man-modal-message man-modal-hidden"></div>
+
+                    <div class="man-category-grid custom-scrollbar">
                         <?php foreach ($enabled_categories as $cat_id) :
                             $cat = get_category($cat_id);
                             if (!$cat) continue;
@@ -54,7 +60,7 @@ class MAN_Frontend {
                         <?php endforeach; ?>
                     </div>
                     <div class="man-modal-footer">
-                        <button type="button" id="man-confirm-subscription">Confirmer l'inscription</button>
+                        <button type="button" class="man-confirm-subscription">Confirmer l'inscription</button>
                     </div>
                 </div>
             </div>
@@ -62,28 +68,42 @@ class MAN_Frontend {
         </div>
 
         <style>
-            #man-category-modal.man-modal-hidden { display: none; }
-            #man-category-modal { position: fixed; inset: 0; z-index: 999999; display: flex; align-items: center; justify-content: center; padding: 20px; font-family: 'Plus Jakarta Sans', sans-serif; }
-            .man-modal-overlay { position: absolute; inset: 0; bg-color: #0f172a; opacity: 0.9; backdrop-filter: blur(8px); background: rgba(15, 23, 42, 0.9); }
-            .man-modal-content { position: relative; background: white; border-radius: 30px; width: 100%; max-width: 600px; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); color: #0f172a; }
-            .man-modal-header { text-align: center; margin-bottom: 30px; }
-            .man-modal-header h3 { font-size: 28px; font-weight: 900; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: -1px; }
+            .man-category-modal.man-modal-hidden { display: none !important; }
+            .man-modal-message.man-modal-hidden { display: none !important; }
+
+            .man-category-modal { position: fixed; inset: 0; z-index: 9999999; display: flex; align-items: center; justify-content: center; padding: 20px; font-family: 'Plus Jakarta Sans', sans-serif; pointer-events: none; }
+            .man-modal-overlay { position: absolute; inset: 0; opacity: 0.95; backdrop-filter: blur(12px); background-color: rgba(15, 23, 42, 0.9); pointer-events: auto; }
+
+            .man-modal-content { position: relative; background: white; border-radius: 40px; width: 100%; max-width: 650px; padding: 50px; box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.5); color: #0f172a; text-align: center; pointer-events: auto; z-index: 10000000; border: 1px solid rgba(255,255,255,0.1); }
+
+            .man-modal-header { text-align: center; margin-bottom: 35px; }
+            .man-modal-header h3.man-modal-title { font-size: 32px; font-weight: 900; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: -1.5px; color: #0f172a; line-height: 1.1; }
             .man-modal-header h3 .highlight { color: #f60; font-style: italic; }
-            .man-modal-header p { color: #64748b; font-weight: 500; font-size: 15px; }
-            .man-modal-close { position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 10px; cursor: pointer; font-weight: bold; color: #64748b; }
+            .man-modal-header p.man-modal-subtitle { color: #64748b; font-weight: 600; font-size: 16px; margin: 0; opacity: 0.8; }
 
-            .man-modal-content .man-category-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-height: 300px; overflow-y: auto; padding-right: 10px; margin-bottom: 30px; }
-            .man-modal-content .man-category-grid::-webkit-scrollbar { width: 6px; }
-            .man-modal-content .man-category-grid::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+            .man-modal-close { position: absolute; top: 25px; right: 25px; background: #f1f5f9; border: none; width: 40px; height: 40px; border-radius: 12px; cursor: pointer; font-weight: bold; color: #64748b; font-size: 16px; line-height: 1; padding: 0; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+            .man-modal-close:hover { background: #e2e8f0; color: #0f172a; transform: rotate(90deg); }
 
-            .man-modal-content .man-category-label { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 12px 15px; border-radius: 12px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
-            .man-modal-content .man-category-label:hover { background: #f1f5f9; border-color: #f603; }
+            .man-modal-message { padding: 20px; border-radius: 15px; margin-bottom: 25px; font-size: 15px; font-weight: 700; line-height: 1.5; }
+            .man-modal-message.error { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+            .man-modal-message.success { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
+
+            .man-modal-content .man-category-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-height: 380px; overflow-y: auto; padding-right: 15px; margin-bottom: 35px; text-align: left; }
+            .man-modal-content .man-category-grid::-webkit-scrollbar { width: 8px; }
+            .man-modal-content .man-category-grid::-webkit-scrollbar-track { background: #f8fafc; border-radius: 10px; }
+            .man-modal-content .man-category-grid::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; border: 2px solid #f8fafc; }
+            .man-modal-content .man-category-grid::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+
+            .man-modal-content .man-category-label { display: flex; align-items: center; gap: 12px; background: #f8fafc; padding: 15px 20px; border-radius: 18px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+            .man-modal-content .man-category-label:hover { background: #f1f5f9; border-color: rgba(255, 102, 0, 0.2); }
             .man-modal-content .man-category-label input:checked + .man-cat-name { color: #f60; font-weight: 800; }
-            .man-modal-content .man-category-label input { width: 18px; height: 18px; accent-color: #f60; }
-            .man-modal-content .man-cat-name { font-size: 14px; font-weight: 600; color: #475569; }
+            .man-modal-content .man-category-label input { width: 22px; height: 22px; accent-color: #f60; margin: 0; flex-shrink: 0; cursor: pointer; }
+            .man-modal-content .man-cat-name { font-size: 15px; font-weight: 700; color: #475569; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-            #man-confirm-subscription { width: 100%; background: #121826; color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 800; font-size: 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; }
-            #man-confirm-subscription:hover { background: #f60; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(246, 102, 0, 0.3); }
+            .man-confirm-subscription { width: 100%; background: #121826; color: white; border: none; padding: 22px; border-radius: 20px; font-weight: 900; font-size: 18px; cursor: pointer !important; text-transform: uppercase; letter-spacing: 1.5px; transition: all 0.3s; margin: 0; box-shadow: 0 10px 25px -5px rgba(18, 24, 38, 0.3); position: relative; overflow: hidden; pointer-events: auto !important; }
+            .man-confirm-subscription:hover { background: #f60; transform: translateY(-3px); box-shadow: 0 20px 35px -10px rgba(246, 102, 0, 0.4); }
+            .man-confirm-subscription:active { transform: translateY(-1px); }
+            .man-confirm-subscription:disabled { opacity: 0.6; cursor: not-allowed !important; transform: none; box-shadow: none; }
         </style>
         <?php
         return ob_get_clean();
