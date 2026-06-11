@@ -4,6 +4,7 @@ if (!defined('ABSPATH')) exit;
 global $wpdb;
 $table_subscribers = $wpdb->prefix . 'man_subscribers';
 $subscribers = $wpdb->get_results("SELECT * FROM $table_subscribers ORDER BY created_at DESC");
+$enabled_categories = get_option('man_enabled_categories', array());
 ?>
 
 <div class="man-admin-tailwind min-h-screen bg-[#f1f5f9] p-4 md:p-12 relative">
@@ -29,6 +30,7 @@ $subscribers = $wpdb->get_results("SELECT * FROM $table_subscribers ORDER BY cre
                     <tr>
                         <th class="px-10 py-8 w-20"><input type="checkbox" id="selectAll" class="w-6 h-6 rounded-lg border-2 border-slate-200 text-[#f60] focus:ring-[#f60]"></th>
                         <th class="px-10 py-8">Email</th>
+                        <th class="px-10 py-8">Départements</th>
                         <th class="px-10 py-8">Status</th>
                         <th class="px-10 py-8">Inscription</th>
                         <th class="px-10 py-8 text-right">Actions</th>
@@ -39,6 +41,23 @@ $subscribers = $wpdb->get_results("SELECT * FROM $table_subscribers ORDER BY cre
                         <tr class="hover:bg-slate-50/30 transition-colors group">
                             <td class="px-10 py-8"><input type="checkbox" class="sub-checkbox w-6 h-6 rounded-lg border-2 border-slate-200 text-[#f60] focus:ring-[#f60]"></td>
                             <td class="px-10 py-8 font-black text-slate-700 text-lg group-hover:text-[#f60] transition-colors"><?php echo esc_html($sub->email); ?></td>
+                            <td class="px-10 py-8">
+                                <div class="flex flex-wrap gap-2">
+                                    <?php
+                                    $sub_cats = maybe_unserialize($sub->categories);
+                                    if (!empty($sub_cats)) {
+                                        foreach ($sub_cats as $cat_id) {
+                                            $cat = get_category($cat_id);
+                                            if ($cat) {
+                                                echo '<span class="px-3 py-1 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-black uppercase tracking-widest">' . esc_html($cat->name) . '</span>';
+                                            }
+                                        }
+                                    } else {
+                                        echo '<span class="text-slate-300 font-bold text-xs">Tous</span>';
+                                    }
+                                    ?>
+                                </div>
+                            </td>
                             <td class="px-10 py-8">
                                 <span class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest <?php echo $sub->status === 'active' ? 'bg-emerald-100 text-emerald-600' : ($sub->status === 'pending' ? 'bg-amber-100 text-amber-600' : 'bg-rose-100 text-rose-600'); ?>">
                                     <?php echo esc_html($sub->status); ?>
@@ -72,6 +91,20 @@ $subscribers = $wpdb->get_results("SELECT * FROM $table_subscribers ORDER BY cre
                     <label class="block text-[11px] font-black uppercase text-slate-400 mb-5 tracking-[0.3em]">ADRESSE EMAIL DE L'ABONNÉ</label>
                     <input type="email" name="email" class="w-full bg-slate-50 border-0 rounded-[2rem] px-10 py-8 focus:ring-[12px] focus:ring-[#f60]/5 focus:bg-white transition-all text-slate-900 font-black text-2xl placeholder:text-slate-200" placeholder="exemple@mail.com" required>
                 </div>
+                <div>
+                    <label class="block text-[11px] font-black uppercase text-slate-400 mb-5 tracking-[0.3em]">DÉPARTEMENTS / ÉDITIONS</label>
+                    <div class="grid grid-cols-2 gap-4 max-h-[200px] overflow-y-auto pr-4 custom-scrollbar">
+                        <?php foreach ($enabled_categories as $cat_id) :
+                            $cat = get_category($cat_id);
+                            if (!$cat) continue;
+                        ?>
+                            <label class="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl cursor-pointer group hover:bg-slate-100 transition-all border-2 border-transparent">
+                                <input type="checkbox" name="categories[]" value="<?php echo $cat_id; ?>" class="w-6 h-6 rounded-lg border-2 border-slate-200 text-[#f60] focus:ring-[#f60] transition-all">
+                                <span class="font-black text-slate-700 text-sm group-hover:text-[#f60] transition-colors"><?php echo esc_html($cat->name); ?></span>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
                 <div class="flex flex-col md:flex-row gap-6 pt-4">
                     <button type="button" class="close-add-modal flex-1 bg-white text-slate-900 border-2 border-slate-100 py-6 rounded-[2rem] font-black text-xl hover:bg-slate-50 transition-all">Annuler</button>
                     <button type="submit" class="flex-1 bg-[#121826] text-white py-6 rounded-[2rem] font-black text-xl hover:bg-[#f60] hover:scale-[1.03] transition-all shadow-2xl shadow-slate-900/20">Confirmer l'Ajout</button>
@@ -101,6 +134,10 @@ jQuery(document).ready(function($) {
     $('#addSubscriberForm').on('submit', function(e) {
         e.preventDefault();
         const email = $(this).find('input[name="email"]').val();
+        const categories = [];
+        $(this).find('input[name="categories[]"]:checked').each(function() {
+            categories.push($(this).val());
+        });
 
         $.ajax({
             url: man_admin.ajax_url,
@@ -108,6 +145,7 @@ jQuery(document).ready(function($) {
             data: {
                 action: 'man_add_subscriber',
                 email: email,
+                categories: categories,
                 is_admin: '1',
                 nonce: man_admin.nonce
             },

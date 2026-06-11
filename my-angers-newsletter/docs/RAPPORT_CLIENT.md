@@ -13,7 +13,7 @@ Le projet **My Angers Newsletter** est né de la volonté de s'affranchir des so
 ### Bénéfices atteints :
 - **Économie Radicale :** Suppression du coût mensuel de 85€ (ex-Mailchimp), soit **1020€ d'économie annuelle**.
 - **Productivité :** Insertion d'articles en 2 clics au lieu d'un copier-coller manuel fastidieux.
-- **Souveraineté des données :** Contrôle total sur la base d'abonnés et les statistiques d'engagement.
+- **Personnalisation :** Segmentation automatique par départements/catégories pour un contenu ultra-pertinent.
 
 ---
 
@@ -36,7 +36,7 @@ Un espace dédié permet une gestion granulaire de votre communauté.
 
 ### Fonctionnalités Clés :
 - **Import/Export CSV :** Migration simplifiée de vos bases de données existantes.
-- **Filtrage Intelligent :** Visualisez rapidement les abonnés actifs vs désinscrits.
+- **Gestion des Départements :** Les abonnés choisissent leurs éditions préférées (Maine-et-Loire, Sarthe, etc.) basées sur vos catégories WordPress.
 - **Sélection Manuelle des Destinataires :** Lors de l'envoi, vous pouvez choisir d'envoyer à toute la base ou sélectionner manuellement des segments spécifiques.
 
 ![Sélection Manuelle](./images/mail%20manuel.PNG)
@@ -68,7 +68,7 @@ La solution intègre des triggers automatiques pour maintenir le lien avec votre
 
 - **Mail de Bienvenue (Angers Press) :** Un contenu personnalisé envoyé instantanément après validation.
 - **Notification Post-Publication :** Alerte automatique des abonnés dès qu'un nouvel article est en ligne.
-- **Daily Digest :** Un récapitulatif élégant envoyé chaque soir à 18h00.
+- **Daily Digest Intelligent :** Un récapitulatif élégant envoyé chaque soir à 18h00, personnalisé selon les départements choisis par chaque abonné. Si aucun article n'est publié dans ses sections, aucun mail n'est envoyé pour éviter de polluer sa boîte.
 
 ---
 

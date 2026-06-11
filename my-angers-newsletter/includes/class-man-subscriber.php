@@ -41,14 +41,18 @@ class MAN_Subscriber {
         }
     }
 
-    public static function add_subscriber($email, $status = 'pending') {
+    public static function add_subscriber($email, $status = 'pending', $categories = array()) {
         global $wpdb;
         $table = $wpdb->prefix . 'man_subscribers';
+        $categories_str = !empty($categories) ? maybe_serialize($categories) : null;
 
         $existing = $wpdb->get_row($wpdb->prepare("SELECT id, status FROM $table WHERE email = %s", $email));
         if ($existing) {
-            if ($existing->status === 'unsubscribed') {
-                $wpdb->update($table, array('status' => $status), array('id' => $existing->id));
+            if ($existing->status === 'unsubscribed' || $existing->status === 'active' || $existing->status === 'pending') {
+                $wpdb->update($table, array(
+                    'status' => $status,
+                    'categories' => $categories_str
+                ), array('id' => $existing->id));
                 return $existing->id;
             }
             return false;
@@ -61,6 +65,7 @@ class MAN_Subscriber {
             'status' => $status,
             'token' => $token,
             'unsubscribe_token' => $unsubscribe_token,
+            'categories' => $categories_str,
             'created_at' => current_time('mysql')
         ));
 
@@ -94,11 +99,13 @@ class MAN_Subscriber {
         }
 
         $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+        $categories = isset($_POST['categories']) ? array_map('intval', $_POST['categories']) : array();
+
         if (!is_email($email)) {
             wp_send_json_error('Email invalide');
         }
 
-        $subscriber_id = self::add_subscriber($email, $status);
+        $subscriber_id = self::add_subscriber($email, $status, $categories);
 
         if ($subscriber_id) {
             wp_send_json_success($is_admin_request ? 'Abonné ajouté !' : 'Merci pour votre inscription !');

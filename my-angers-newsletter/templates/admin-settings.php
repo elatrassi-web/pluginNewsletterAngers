@@ -6,6 +6,7 @@ if (isset($_POST['man_save_settings'])) {
     update_option('man_double_optin', isset($_POST['double_optin']) ? '1' : '0');
     update_option('man_auto_notify', isset($_POST['auto_notify']) ? '1' : '0');
     update_option('man_daily_digest', isset($_POST['daily_digest']) ? '1' : '0');
+    update_option('man_enabled_categories', isset($_POST['enabled_categories']) ? array_map('intval', $_POST['enabled_categories']) : array());
     update_option('man_email_template', sanitize_text_field($_POST['email_template']));
     echo '<div class="man-admin-tailwind px-8 pt-8"><div class="bg-emerald-500 text-white p-6 rounded-[2rem] font-black shadow-2xl shadow-emerald-200 animate-bounce flex items-center gap-4"><span class="dashicons dashicons-yes-alt"></span> Réglages enregistrés avec succès !</div></div>';
 }
@@ -13,7 +14,10 @@ if (isset($_POST['man_save_settings'])) {
 $double_optin = get_option('man_double_optin', '1');
 $auto_notify = get_option('man_auto_notify', '0');
 $daily_digest = get_option('man_daily_digest', '0');
+$enabled_categories = get_option('man_enabled_categories', array());
 $email_template = get_option('man_email_template', 'modern');
+
+$all_categories = get_categories(array('hide_empty' => 0));
 ?>
 
 <div class="man-admin-tailwind min-h-screen bg-[#f1f5f9] p-4 md:p-12">
@@ -27,6 +31,24 @@ $email_template = get_option('man_email_template', 'modern');
 
         <div class="flex flex-col lg:flex-row gap-12 items-start">
             <div class="flex-1 space-y-12 w-full">
+                <!-- Departments Selection Card -->
+                <div class="bg-white rounded-[3.5rem] p-12 shadow-2xl shadow-slate-200/60 border border-white/50">
+                    <h3 class="text-3xl font-black mb-12 text-slate-900 border-b-2 border-slate-50 pb-8 uppercase tracking-tight">Gestion des Départements</h3>
+                    <p class="text-slate-400 font-bold mb-10 text-lg">Sélectionnez les catégories WordPress qui serviront de "Départements" pour vos abonnés.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
+                        <?php foreach ($all_categories as $cat) : ?>
+                            <label class="flex items-center gap-6 p-6 bg-slate-50 rounded-[2rem] cursor-pointer group hover:bg-white border-2 border-transparent hover:border-[#f60]/20 transition-all">
+                                <input type="checkbox" name="enabled_categories[]" value="<?php echo $cat->term_id; ?>" class="w-8 h-8 rounded-xl border-2 border-slate-200 text-[#f60] focus:ring-[#f60] transition-all cursor-pointer" <?php checked(in_array($cat->term_id, $enabled_categories)); ?>>
+                                <div class="flex flex-col">
+                                    <span class="text-xl font-black text-slate-700 group-hover:text-[#f60] transition-colors"><?php echo esc_html($cat->name); ?></span>
+                                    <span class="text-sm font-bold text-slate-400 uppercase tracking-widest"><?php echo $cat->count; ?> articles</span>
+                                </div>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
                 <!-- Protocols Card -->
                 <div class="bg-white rounded-[3.5rem] p-12 shadow-2xl shadow-slate-200/60 border border-white/50">
                     <h3 class="text-3xl font-black mb-12 text-slate-900 border-b-2 border-slate-50 pb-8 uppercase tracking-tight">Protocoles d'Inscription</h3>

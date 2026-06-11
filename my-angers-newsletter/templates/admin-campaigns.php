@@ -212,8 +212,8 @@ jQuery(document).ready(function($) {
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                 </div>
                                 <div class="flex-grow">
-                                    <h4 class="font-black text-slate-800 leading-tight mb-3 group-hover:text-[#f60] transition-colors text-xl line-clamp-2 uppercase tracking-tight">${post.title}</h4>
-                                    <p class="text-sm text-slate-400 font-bold line-clamp-3 leading-relaxed italic opacity-70">${post.excerpt}</p>
+                                    <h4 class="font-black text-slate-900 leading-tight mb-3 group-hover:text-[#f60] transition-colors text-2xl line-clamp-2 uppercase tracking-tighter">${post.title}</h4>
+                                    <p class="text-base text-slate-500 font-bold line-clamp-3 leading-relaxed italic opacity-90">${post.excerpt}</p>
                                 </div>
                             </label>
                         `;

@@ -18,14 +18,34 @@ class MAN_Frontend {
     }
 
     public function render_shortcode() {
+        $enabled_categories = get_option('man_enabled_categories', array());
         ob_start();
         ?>
         <div class="man-newsletter-form-container">
-            <form id="man-newsletter-form" class="man-d-flex">
-                <input type="email" name="email" id="man-email" placeholder="E-mail" required>
-                <button type="submit" id="man-submit">
-                    <span class="man-icon">🔔</span> Je m'abonne
-                </button>
+            <form id="man-newsletter-form">
+                <div class="man-d-flex">
+                    <input type="email" name="email" id="man-email" placeholder="Votre E-mail" required>
+                    <button type="submit" id="man-submit">
+                        <span class="man-icon">🔔</span> Je m'abonne
+                    </button>
+                </div>
+
+                <?php if (!empty($enabled_categories)) : ?>
+                <div class="man-category-selection">
+                    <p class="man-category-title">Choisissez vos éditions (départements) :</p>
+                    <div class="man-category-grid">
+                        <?php foreach ($enabled_categories as $cat_id) :
+                            $cat = get_category($cat_id);
+                            if (!$cat) continue;
+                        ?>
+                            <label class="man-category-label">
+                                <input type="checkbox" name="categories[]" value="<?php echo $cat_id; ?>" checked>
+                                <span><?php echo esc_html($cat->name); ?></span>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
             </form>
             <div id="man-message"></div>
         </div>

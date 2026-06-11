@@ -114,44 +114,60 @@ class MAN_Automation {
             return;
         }
 
-        $posts = get_posts(array(
-            'date_query' => array(
-                array(
-                    'after' => 'today',
-                    'inclusive' => true,
-                ),
-            ),
-            'posts_per_page' => -1,
-        ));
-
-        if (empty($posts)) return;
-
-        $subject = "Récapitulatif du jour - " . date_i18n(get_option('date_format'));
-
-        // Build Grid/Masonry-like layout for email
-        $grid_html = '<div style="display: flex; flex-wrap: wrap; margin: -10px;">';
-        foreach ($posts as $index => $post) {
-            $thumb = get_the_post_thumbnail_url($post->ID, 'medium');
-            $width = ($index % 3 === 0) ? '100%' : '48%'; // Mixing full width and half width for masonry feel
-
-            $grid_html .= '<div style="width: ' . $width . '; box-sizing: border-box; padding: 10px;">';
-            $grid_html .= '<div style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 12px; overflow: hidden;">';
-            if ($thumb) $grid_html .= '<img src="' . $thumb . '" style="width: 100%; height: auto; display: block;">';
-            $grid_html .= '<div style="padding: 15px;">';
-            $grid_html .= '<h3 style="margin: 0 0 10px 0; font-size: 18px; line-height: 1.3;">' . get_the_title($post->ID) . '</h3>';
-            $grid_html .= '<p style="font-size: 14px; color: #64748b; margin-bottom: 15px;">' . wp_trim_words(get_the_excerpt($post->ID), 15) . '</p>';
-            $grid_html .= '<a href="' . get_permalink($post->ID) . '" style="color: #f60; font-weight: bold; text-decoration: none; font-size: 14px;">Lire la suite →</a>';
-            $grid_html .= '</div></div></div>';
-        }
-        $grid_html .= '</div>';
-
         global $wpdb;
         $table = $wpdb->prefix . 'man_subscribers';
         $subscribers = $wpdb->get_results("SELECT * FROM $table WHERE status = 'active'");
 
+        if (empty($subscribers)) return;
+
         $newsletter = new MAN_Newsletter();
+        $date_str = date_i18n(get_option('date_format'));
+
         foreach ($subscribers as $sub) {
-            $content = $newsletter->prepare_email_content($grid_html, $subject, 0, $sub);
+            $sub_cats = maybe_unserialize($sub->categories);
+
+            $args = array(
+                'date_query' => array(
+                    array(
+                        'after' => '24 hours ago',
+                        'inclusive' => true,
+                    ),
+                ),
+                'posts_per_page' => -1,
+            );
+
+            if (!empty($sub_cats)) {
+                $args['category__in'] = $sub_cats;
+            }
+
+            $posts = get_posts($args);
+
+            if (empty($posts)) continue;
+
+            $subject = "Votre Récapitulatif Quotidien - " . $date_str;
+
+            $grid_html = '<div style="padding-bottom: 30px; border-bottom: 2px solid #f1f5f9; margin-bottom: 30px;">';
+            $grid_html .= '<h1 style="font-size: 32px; font-weight: 900; color: #121826; margin: 0;">Le meilleur de <span style="color: #f60;">vos éditions</span></h1>';
+            $grid_html .= '<p style="color: #64748b; font-size: 16px; margin-top: 5px;">Voici les actualités du jour sélectionnées pour vous.</p>';
+            $grid_html .= '</div>';
+
+            $grid_html .= '<div style="display: flex; flex-wrap: wrap; margin: -10px;">';
+            foreach ($posts as $index => $post) {
+                $thumb = get_the_post_thumbnail_url($post->ID, 'medium');
+                $width = ($index % 3 === 0) ? '100%' : '48%';
+
+                $grid_html .= '<div style="width: ' . $width . '; box-sizing: border-box; padding: 10px;">';
+                $grid_html .= '<div style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 16px; overflow: hidden; height: 100%; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">';
+                if ($thumb) $grid_html .= '<img src="' . $thumb . '" style="width: 100%; height: auto; display: block;">';
+                $grid_html .= '<div style="padding: 20px;">';
+                $grid_html .= '<h3 style="margin: 0 0 12px 0; font-size: 20px; line-height: 1.3; font-weight: 800; color: #121826; text-transform: uppercase;">' . get_the_title($post->ID) . '</h3>';
+                $grid_html .= '<p style="font-size: 15px; color: #475569; margin-bottom: 20px; line-height: 1.6;">' . wp_trim_words(get_the_excerpt($post->ID), 20) . '</p>';
+                $grid_html .= '<a href="' . get_permalink($post->ID) . '" style="display: inline-block; color: #f60; font-weight: 900; text-decoration: none; font-size: 15px; text-transform: uppercase; letter-spacing: 0.05em;">Lire l\'article →</a>';
+                $grid_html .= '</div></div></div>';
+            }
+            $grid_html .= '</div>';
+
+            $content = $newsletter->prepare_email_content($grid_html, $subject, 0, $sub, 'modern');
             $headers = array('Content-Type: text/html; charset=UTF-8');
             MyAngersNewsletter::send_mail($sub->email, $subject, $content, $headers);
         }

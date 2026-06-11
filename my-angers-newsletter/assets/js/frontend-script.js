@@ -3,6 +3,10 @@ jQuery(document).ready(function($) {
         e.preventDefault();
 
         const email = $('#man-email').val();
+        const categories = [];
+        $('input[name="categories[]"]:checked').each(function() {
+            categories.push($(this).val());
+        });
         const $message = $('#man-message');
         const $submit = $('#man-submit');
 
@@ -14,7 +18,8 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'man_add_subscriber',
-                email: email
+                email: email,
+                categories: categories
             },
             success: function(response) {
                 if (response.success) {
