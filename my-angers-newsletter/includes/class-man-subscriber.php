@@ -10,6 +10,7 @@ class MAN_Subscriber {
         add_action('wp_ajax_nopriv_man_add_subscriber', array($this, 'ajax_add_subscriber'));
         add_action('wp_ajax_man_delete_subscriber', array($this, 'ajax_delete_subscriber'));
         add_action('wp_ajax_man_import_csv', array($this, 'ajax_import_csv'));
+        add_action('wp_ajax_man_repair_db', array($this, 'ajax_repair_db'));
         add_action('admin_init', array($this, 'handle_export_csv'));
     }
 
@@ -41,7 +42,7 @@ class MAN_Subscriber {
         }
     }
 
-    public static function add_subscriber($email, $status = 'pending', $categories = array()) {
+    public static function add_subscriber($email, $status = 'pending', $categories = array(), $retry_repair = true) {
         global $wpdb;
         $table = $wpdb->prefix . 'man_subscribers';
         $categories_str = !empty($categories) ? maybe_serialize($categories) : null;
@@ -66,7 +67,11 @@ class MAN_Subscriber {
             $result = $wpdb->update($table, $update_data, array('id' => $existing->id));
 
             if ($result === false) {
-                error_log("MAN Newsletter Error (Update): " . $wpdb->last_error . " | Data: " . print_r($update_data, true));
+                if ($retry_repair && strpos($wpdb->last_error, 'Unknown column') !== false) {
+                    MAN_DB::repair_database();
+                    return self::add_subscriber($email, $status, $categories, false);
+                }
+                error_log("MAN Newsletter Error (Update): " . $wpdb->last_error);
                 return false;
             }
 
@@ -97,7 +102,12 @@ class MAN_Subscriber {
             return array('id' => $subscriber_id, 'type' => 'new');
         }
 
-        error_log("MAN Newsletter Error (Insert): " . $wpdb->last_error . " | Data: " . print_r($insert_data, true));
+        if ($retry_repair && strpos($wpdb->last_error, 'Unknown column') !== false) {
+            MAN_DB::repair_database();
+            return self::add_subscriber($email, $status, $categories, false);
+        }
+
+        error_log("MAN Newsletter Error (Insert): " . $wpdb->last_error);
         return false;
     }
 
@@ -146,11 +156,22 @@ class MAN_Subscriber {
         } else {
             $msg = 'Une erreur est survenue lors de l\'enregistrement.';
             if (!empty($wpdb->last_error)) {
-                $msg .= ' DB Error: ' . $wpdb->last_error;
-            } else {
-                $msg .= ' (Erreur inconnue, veuillez vérifier les logs PHP)';
+                $msg .= ' Details: ' . $wpdb->last_error;
             }
             wp_send_json_error($msg);
+        }
+    }
+
+    public function ajax_repair_db() {
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Permission refusée');
+        }
+        check_ajax_referer('man_admin_nonce', 'nonce');
+
+        if (MAN_DB::create_tables()) {
+            wp_send_json_success('La base de données a été vérifiée et réparée avec succès !');
+        } else {
+            wp_send_json_error('Une erreur est survenue lors de la réparation de la base de données.');
         }
     }
 

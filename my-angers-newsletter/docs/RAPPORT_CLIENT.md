@@ -1,6 +1,7 @@
 # Rapport de Projet : Solution Newsletter sur Mesure
 
 **Dates de développement :** 09/06/2024 et 10/06/2024
+**Version :** 1.1.7 (Stable)
 **Projet :** My Angers Newsletter
 **Client :** Direction my-angers.info
 
@@ -39,8 +40,6 @@ Un espace dédié permet une gestion granulaire de votre communauté.
 - **Gestion des Départements :** Les abonnés choisissent leurs éditions préférées (Maine-et-Loire, Sarthe, etc.) basées sur vos catégories WordPress.
 - **Sélection Manuelle des Destinataires :** Lors de l'envoi, vous pouvez choisir d'envoyer à toute la base ou sélectionner manuellement des segments spécifiques.
 
-![Sélection Manuelle](./images/mail%20manuel.PNG)
-
 ---
 
 ## 4. Le Studio Créatif : Éditeur de Campagnes
@@ -52,8 +51,6 @@ Cœur battant du plugin, le Studio permet de créer des mails visuellement riche
 ### L'intelligence au service du contenu :
 Fini le temps perdu à chercher les images et les liens de vos articles. Notre modal d'importation fait tout le travail pour vous.
 
-![Articles Récents](./images/articles%20recent.PNG)
-
 1. Ouvrez la bibliothèque d'articles.
 2. Cochez les sujets à diffuser.
 3. Cliquez sur "Insérer". C'est prêt.
@@ -64,12 +61,10 @@ Fini le temps perdu à chercher les images et les liens de vos articles. Notre m
 
 La solution intègre des triggers automatiques pour maintenir le lien avec votre audience.
 
-![Configuration Système](./images/configuration.PNG)
-
 - **Mail de Bienvenue (Angers Press) :** Un contenu personnalisé envoyé instantanément après validation.
 - **Notification Post-Publication :** Alerte automatique des abonnés dès qu'un nouvel article est en ligne.
-- **Daily Digest Intelligent :** Un récapitulatif élégant envoyé chaque soir à 18h00, personnalisé selon les départements choisis par chaque abonné. Si aucun article n'est publié dans ses sections, aucun mail n'est envoyé pour éviter de polluer sa boîte.
-- **Expérience Interactive :** Un popup moderne après la saisie de l'email permet une segmentation immédiate et fluide.
+- **Daily Digest Intelligent :** Un récapitulatif élégant envoyé chaque soir à 18h00, personnalisé selon les départements choisis par chaque abonné.
+- **Maintenance Autonome (Nouveau) :** Système de réparation automatique de la base de données pour garantir une inscription sans faille, même après une mise à jour serveur.
 
 ---
 
@@ -85,25 +80,15 @@ Un champ de saisie minimaliste et performant s'intègre parfaitement dans votre 
 ### Parcours de Validation (Double Opt-in)
 Protection contre le spam et garantie de qualité de la base de données.
 
-![Mail de Confirmation](./images/mail%20de%20confirmation.PNG)
-*L'email reçu par l'utilisateur.*
-
-![Confirmation Réussie](./images/confirmé.PNG)
-*La page de succès après clic sur le bouton.*
-
 ---
 
 ## 7. Statistiques et Thèmes
 
 Suivez vos performances et adaptez votre image de marque.
 
-![Thèmes](./images/théme.PNG)
-
 - **Analyse des Clics :** Suivi précis des liens les plus consultés.
 - **Tracking 1x1 :** Pixel invisible pour mesurer le taux d'ouverture réel.
-- **Personnalisation :** Choisissez l'esthétique qui vous ressemble parmi les thèmes disponibles.
-
-![Statistiques Détaillées](./images/11111111.PNG)
+- **Personnalisation :** Choisissez l'esthétique qui vous ressemble parmi les thèmes disponibles (Moderne, Classique, Minimal).
 
 ---
 

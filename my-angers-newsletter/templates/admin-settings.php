@@ -80,6 +80,23 @@ $all_categories = get_categories(array('hide_empty' => 0));
                     </div>
                 </div>
 
+                <!-- Maintenance Card -->
+                <div class="bg-white rounded-[3.5rem] p-12 shadow-2xl shadow-slate-200/60 border border-white/50">
+                    <h3 class="text-3xl font-black mb-12 text-slate-900 border-b-2 border-slate-50 pb-8 uppercase tracking-tight">Maintenance & Base de Données</h3>
+                    <p class="text-slate-400 font-bold mb-10 text-lg leading-relaxed">Si vous rencontrez des problèmes lors de l'inscription (erreurs "Unknown column"), utilisez cet outil pour réparer la structure de vos tables.</p>
+
+                    <button type="button" class="man-repair-db-btn flex items-center gap-6 p-10 bg-slate-50 rounded-[3rem] border-4 border-dashed border-slate-100 hover:border-[#f60] hover:bg-slate-100 transition-all group w-full text-left">
+                        <div class="w-20 h-20 bg-slate-200 rounded-[2rem] flex items-center justify-center group-hover:bg-[#f60] group-hover:text-white transition-all shrink-0">
+                            <span class="dashicons dashicons-admin-tools" style="font-size: 40px; width: 40px; height: 40px;"></span>
+                        </div>
+                        <div>
+                            <span class="block text-2xl font-black text-slate-800 uppercase tracking-tighter">Réparer la Structure de Données</span>
+                            <span class="text-slate-400 font-bold text-base opacity-70">Vérifie et ajoute les colonnes manquantes.</span>
+                        </div>
+                    </button>
+                    <div class="man-repair-message mt-6 font-bold text-lg hidden"></div>
+                </div>
+
                 <!-- Template Selection Card -->
                 <div class="bg-white rounded-[3.5rem] p-12 shadow-2xl shadow-slate-200/60 border border-white/50">
                     <h3 class="text-3xl font-black mb-12 text-slate-900 border-b-2 border-slate-50 pb-8 uppercase tracking-tight">Apparence & Expérience</h3>
@@ -165,7 +182,6 @@ jQuery(document).ready(function($) {
     $('input[name="email_template"]').on('change', function() {
         const selectedValue = $(this).val();
 
-        // Remove active state from all
         $('.cursor-pointer.group.relative').each(function() {
             const $container = $(this).find('div.border-4');
             $container.removeClass('border-[#f60] bg-[#f60]/5 shadow-2xl shadow-[#f60]/20')
@@ -173,7 +189,6 @@ jQuery(document).ready(function($) {
             $(this).find('.absolute.inset-0').remove();
         });
 
-        // Add active state to selected
         const $activeLabel = $(`input[value="${selectedValue}"]`).closest('label');
         const $activeContainer = $activeLabel.find('div.border-4');
 
@@ -187,6 +202,28 @@ jQuery(document).ready(function($) {
                 </div>
             </div>
         `);
+    });
+
+    $('.man-repair-db-btn').on('click', function() {
+        const $btn = $(this);
+        const $message = $('.man-repair-message');
+
+        if (!confirm('Voulez-vous vraiment lancer la réparation de la base de données ?')) return;
+
+        $btn.prop('disabled', true).css('opacity', '0.5');
+        $message.removeClass('hidden error success').text('Réparation en cours...').show();
+
+        $.post(man_admin.ajax_url, {
+            action: 'man_repair_db',
+            nonce: man_admin.nonce
+        }, function(response) {
+            if (response.success) {
+                $message.removeClass('text-red-500').addClass('text-emerald-500').text(response.data);
+            } else {
+                $message.removeClass('text-emerald-500').addClass('text-red-500').text(response.data);
+            }
+            $btn.prop('disabled', false).css('opacity', '1');
+        });
     });
 });
 </script>

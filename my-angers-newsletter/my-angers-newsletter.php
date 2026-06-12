@@ -3,7 +3,7 @@
  * Plugin Name: My Angers Newsletter
  * Plugin URI: https://my-angers.info
  * Description: Un outil complet de gestion de newsletter pour my-angers.info, incluant la gestion des abonnés, l'automatisation et des statistiques.
- * Version: 1.1.5
+ * Version: 1.1.7
  * Author: Jules
  * Text Domain: my-angers-newsletter
  */
@@ -14,7 +14,8 @@ if (!defined('ABSPATH')) {
 
 define('MAN_PATH', plugin_dir_path(__FILE__));
 define('MAN_URL', plugin_dir_url(__FILE__));
-define('MAN_VERSION', '1.1.5');
+define('MAN_VERSION', '1.1.7');
+define('MAN_DB_VERSION', '1.1.7');
 
 // Main class
 class MyAngersNewsletter {
@@ -30,6 +31,9 @@ class MyAngersNewsletter {
     private function __construct() {
         $this->includes();
         $this->init_hooks();
+
+        // Auto-update database if version changed
+        add_action('plugins_loaded', array($this, 'check_db_update'));
     }
 
     private function includes() {
@@ -47,8 +51,17 @@ class MyAngersNewsletter {
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
     }
 
+    public function check_db_update() {
+        $installed_ver = get_option('man_db_version');
+        if ($installed_ver !== MAN_DB_VERSION) {
+            MAN_DB::create_tables();
+            update_option('man_db_version', MAN_DB_VERSION);
+        }
+    }
+
     public function activate() {
         MAN_DB::create_tables();
+        update_option('man_db_version', MAN_DB_VERSION);
 
         // Ensure all existing subscribers have an unsubscribe token
         global $wpdb;
