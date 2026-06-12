@@ -14,7 +14,12 @@ if (isset($_POST['man_save_settings'])) {
     wp_clear_scheduled_hook('man_daily_digest');
     if (get_option('man_daily_digest') === '1') {
         $time = get_option('man_daily_digest_time', '18:00');
-        wp_schedule_event(strtotime($time), 'daily', 'man_daily_digest');
+        // Ensure we schedule for the next occurrence
+        $timestamp = strtotime($time);
+        if ($timestamp < time()) {
+            $timestamp += DAY_IN_SECONDS;
+        }
+        wp_schedule_event($timestamp, 'daily', 'man_daily_digest');
     }
 
     echo '<div class="man-admin-tailwind px-8 pt-8"><div class="bg-emerald-500 text-white p-6 rounded-[2rem] font-black shadow-2xl shadow-emerald-200 animate-bounce flex items-center gap-4"><span class="dashicons dashicons-yes-alt"></span> Réglages enregistrés avec succès !</div></div>';
@@ -28,6 +33,8 @@ $enabled_categories = get_option('man_enabled_categories', array());
 $email_template = get_option('man_email_template', 'modern');
 
 $all_categories = get_categories(array('hide_empty' => 0));
+
+$next_run = wp_next_scheduled('man_daily_digest');
 ?>
 
 <div class="man-admin-tailwind min-h-screen bg-[#f1f5f9] p-4 md:p-12">
@@ -88,9 +95,21 @@ $all_categories = get_categories(array('hide_empty' => 0));
                                     <span class="text-slate-400 font-bold text-base leading-relaxed mt-2 block opacity-70">Envoi groupé automatique chaque jour.</span>
                                 </div>
                             </label>
-                            <div class="ml-16 flex items-center gap-4 bg-slate-50 p-6 rounded-3xl border border-slate-100">
-                                <span class="text-slate-500 font-bold uppercase tracking-widest text-xs">Heure d'envoi :</span>
-                                <input type="time" name="daily_digest_time" value="<?php echo esc_attr($daily_digest_time); ?>" class="bg-white border-2 border-slate-200 rounded-xl px-4 py-2 font-black text-[#121826] focus:border-[#f60] outline-none">
+                            <div class="ml-16 flex flex-col md:flex-row md:items-center gap-6 bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                                <div class="flex items-center gap-4">
+                                    <span class="text-slate-500 font-bold uppercase tracking-widest text-xs whitespace-nowrap">Heure d'envoi :</span>
+                                    <input type="time" name="daily_digest_time" value="<?php echo esc_attr($daily_digest_time); ?>" class="bg-white border-2 border-slate-200 rounded-xl px-4 py-2 font-black text-[#121826] focus:border-[#f60] outline-none">
+                                </div>
+                                <?php if ($next_run) : ?>
+                                    <div class="flex items-center gap-2 text-emerald-600 font-bold text-sm">
+                                        <span class="dashicons dashicons-clock"></span>
+                                        Prochain envoi : <?php echo date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $next_run); ?>
+                                    </div>
+                                <?php else : ?>
+                                    <div class="text-slate-400 font-bold text-sm flex items-center gap-2">
+                                        <span class="dashicons dashicons-warning"></span> Automatisme désactivé
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -119,7 +138,7 @@ $all_categories = get_categories(array('hide_empty' => 0));
                             </div>
                             <div>
                                 <span class="block text-xl font-black text-slate-800 uppercase tracking-tighter">Envoyer Récap Now</span>
-                                <span class="text-slate-400 font-bold text-xs opacity-70">Test Immédiat (24h)</span>
+                                <span class="text-slate-400 font-bold text-xs opacity-70">Test Immédiat (14 arts)</span>
                             </div>
                         </button>
                     </div>
@@ -242,9 +261,9 @@ jQuery(document).ready(function($) {
             nonce: man_admin.nonce
         }, function(response) {
             if (response.success) {
-                $message.addClass('text-emerald-500').text(response.data);
+                $message.removeClass('text-red-500').addClass('text-emerald-500 text-center').text(response.data);
             } else {
-                $message.addClass('text-red-500').text(response.data);
+                $message.removeClass('text-emerald-500').addClass('text-red-500 text-center').text(response.data);
             }
             $btn.prop('disabled', false).css('opacity', '1');
         });
@@ -262,9 +281,9 @@ jQuery(document).ready(function($) {
             nonce: man_admin.nonce
         }, function(response) {
             if (response.success) {
-                $message.addClass('text-emerald-500').text(response.data);
+                $message.removeClass('text-red-500').addClass('text-emerald-500 text-center').text(response.data);
             } else {
-                $message.addClass('text-red-500').text(response.data);
+                $message.removeClass('text-emerald-500').addClass('text-red-500 text-center').text(response.data);
             }
             $btn.prop('disabled', false).css('opacity', '1');
         });

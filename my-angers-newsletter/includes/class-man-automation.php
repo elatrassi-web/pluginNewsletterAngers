@@ -116,23 +116,26 @@ class MAN_Automation {
         }
         check_ajax_referer('man_admin_nonce', 'nonce');
 
-        $this->send_daily_digest(true);
-        wp_send_json_success('Le récapitulatif quotidien a été envoyé aux abonnés actifs (articles des dernières 24h).');
+        $count = $this->send_daily_digest(true);
+        wp_send_json_success("Le récapitulatif quotidien a été envoyé à $count abonnés actifs (articles des dernières 24h).");
     }
 
     public function send_daily_digest($force = false) {
         if (!$force && get_option('man_daily_digest', '0') !== '1') {
-            return;
+            return 0;
         }
+
+        error_log("MAN Newsletter: Starting daily digest execution.");
 
         global $wpdb;
         $table = $wpdb->prefix . 'man_subscribers';
         $subscribers = $wpdb->get_results("SELECT * FROM $table WHERE status = 'active'");
 
-        if (empty($subscribers)) return;
+        if (empty($subscribers)) return 0;
 
         $newsletter = new MAN_Newsletter();
         $date_str = date_i18n(get_option('date_format'));
+        $count = 0;
 
         foreach ($subscribers as $sub) {
             $sub_cats = maybe_unserialize($sub->categories);
@@ -146,7 +149,7 @@ class MAN_Automation {
                         'inclusive' => true,
                     ),
                 ),
-                'posts_per_page' => -1,
+                'posts_per_page' => 14, // Max 14 articles
             );
 
             if (!empty($sub_cats)) {
@@ -159,31 +162,47 @@ class MAN_Automation {
 
             $subject = "Votre Récapitulatif Quotidien - " . $date_str;
 
-            $grid_html = '<div style="padding-bottom: 30px; border-bottom: 2px solid #f1f5f9; margin-bottom: 30px;">';
-            $grid_html .= '<h1 style="font-size: 28px; font-weight: 900; color: #121826; margin: 0;">Le meilleur de <span style="color: #f60;">vos éditions</span></h1>';
-            $grid_html .= '<p style="color: #64748b; font-size: 16px; margin-top: 5px;">Voici les actualités du jour sélectionnées pour vous.</p>';
+            $grid_html = '<div style="padding-bottom: 30px; border-bottom: 2px solid #f1f5f9; margin-bottom: 30px; text-align: center;">';
+            $grid_html .= '<h1 style="font-size: 24px; font-weight: 900; color: #121826; margin: 0;">Le meilleur de <span style="color: #f60;">vos éditions</span></h1>';
+            $grid_html .= '<p style="color: #64748b; font-size: 14px; margin-top: 5px;">Voici les 14 dernières actualités sélectionnées pour vous.</p>';
             $grid_html .= '</div>';
 
-            $grid_html .= '<div style="display: flex; flex-wrap: wrap; margin: -10px;">';
-            foreach ($posts as $index => $post) {
-                $thumb = get_the_post_thumbnail_url($post->ID, 'medium');
-                $width = ($index % 3 === 0) ? '100%' : '48%';
+            // Start 2-column table layout
+            $grid_html .= '<table width="100%" border="0" cellspacing="0" cellpadding="0" style="border-collapse: collapse;">';
 
-                $grid_html .= '<div style="width: ' . $width . '; box-sizing: border-box; padding: 10px;">';
-                $grid_html .= '<div style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 16px; overflow: hidden; height: 100%; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">';
-                if ($thumb) $grid_html .= '<img src="' . $thumb . '" style="width: 100%; height: auto; display: block;">';
-                $grid_html .= '<div style="padding: 20px;">';
-                $grid_html .= '<h3 style="margin: 0 0 10px 0; font-size: 16px; line-height: 1.4; font-weight: 800; color: #121826;">' . get_the_title($post->ID) . '</h3>';
-                $grid_html .= '<p style="font-size: 14px; color: #475569; margin-bottom: 15px; line-height: 1.5;">' . wp_trim_words(get_the_excerpt($post->ID), 18) . '</p>';
-                $grid_html .= '<a href="' . get_permalink($post->ID) . '" style="display: inline-block; color: #f60; font-weight: 900; text-decoration: none; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;">Lire l\'article →</a>';
-                $grid_html .= '</div></div></div>';
+            $chunks = array_chunk($posts, 2);
+            foreach ($chunks as $row_posts) {
+                $grid_html .= '<tr>';
+                foreach ($row_posts as $post) {
+                    $thumb = get_the_post_thumbnail_url($post->ID, 'medium');
+                    $grid_html .= '<td width="50%" valign="top" style="padding: 10px;">';
+                    $grid_html .= '<div style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 12px; overflow: hidden; height: 100%;">';
+                    if ($thumb) {
+                        $grid_html .= '<img src="' . $thumb . '" style="width: 100%; height: 140px; object-fit: cover; display: block; border-bottom: 1px solid #f1f5f9;">';
+                    }
+                    $grid_html .= '<div style="padding: 15px;">';
+                    $grid_html .= '<h3 style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.4; font-weight: 800; color: #121826; height: 40px; overflow: hidden;">' . get_the_title($post->ID) . '</h3>';
+                    $grid_html .= '<p style="font-size: 12px; color: #475569; margin-bottom: 15px; line-height: 1.5; height: 54px; overflow: hidden;">' . wp_trim_words(get_the_excerpt($post->ID), 12) . '</p>';
+                    $grid_html .= '<a href="' . get_permalink($post->ID) . '" style="display: inline-block; color: #f60; font-weight: 900; text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">Lire l\'article →</a>';
+                    $grid_html .= '</div></div></td>';
+                }
+                // Handle odd numbers of posts
+                if (count($row_posts) < 2) {
+                    $grid_html .= '<td width="50%">&nbsp;</td>';
+                }
+                $grid_html .= '</tr>';
             }
-            $grid_html .= '</div>';
+            $grid_html .= '</table>';
 
             $content = $newsletter->prepare_email_content($grid_html, $subject, 0, $sub, 'modern');
             $headers = array('Content-Type: text/html; charset=UTF-8');
-            MyAngersNewsletter::send_mail($sub->email, $subject, $content, $headers);
+            if (MyAngersNewsletter::send_mail($sub->email, $subject, $content, $headers)) {
+                $count++;
+            }
         }
+
+        error_log("MAN Newsletter: Daily digest sent to $count subscribers.");
+        return $count;
     }
 }
 
