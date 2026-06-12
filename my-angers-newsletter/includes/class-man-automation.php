@@ -89,6 +89,7 @@ class MAN_Automation {
 
         if (!$subscribers) return;
 
+        $post_cats = wp_get_post_categories($post->ID);
         $subject = "Nouvel article : " . get_the_title($post->ID);
         $excerpt = wp_trim_words(get_the_excerpt($post->ID), 30);
         $url = get_permalink($post->ID);
@@ -104,6 +105,15 @@ class MAN_Automation {
         $newsletter = new MAN_Newsletter();
 
         foreach ($subscribers as $sub) {
+            $sub_cats = maybe_unserialize($sub->categories);
+
+            if (!empty($sub_cats) && is_array($sub_cats)) {
+                $intersect = array_intersect($post_cats, $sub_cats);
+                if (empty($intersect)) {
+                    continue;
+                }
+            }
+
             $content = $newsletter->prepare_email_content($raw_content, $subject, 0, $sub);
             $headers = array('Content-Type: text/html; charset=UTF-8');
             MyAngersNewsletter::send_mail($sub->email, $subject, $content, $headers);
@@ -125,13 +135,16 @@ class MAN_Automation {
             return 0;
         }
 
-        error_log("MAN Newsletter: Starting daily digest execution.");
+        error_log("MAN Newsletter: Starting daily digest execution. Force: " . ($force ? 'yes' : 'no'));
 
         global $wpdb;
         $table = $wpdb->prefix . 'man_subscribers';
         $subscribers = $wpdb->get_results("SELECT * FROM $table WHERE status = 'active'");
 
-        if (empty($subscribers)) return 0;
+        if (empty($subscribers)) {
+            error_log("MAN Newsletter: No active subscribers found.");
+            return 0;
+        }
 
         $newsletter = new MAN_Newsletter();
         $date_str = date_i18n(get_option('date_format'));
@@ -140,25 +153,46 @@ class MAN_Automation {
         foreach ($subscribers as $sub) {
             $sub_cats = maybe_unserialize($sub->categories);
 
+            if (!empty($sub_cats) && !is_array($sub_cats)) {
+                if (is_string($sub_cats)) {
+                    $sub_cats = array_filter(explode(',', $sub_cats));
+                } else {
+                    $sub_cats = array();
+                }
+            }
+
+            // More robust date calculation
+            $after_date = date('Y-m-d H:i:s', current_time('timestamp') - DAY_IN_SECONDS);
+
             $args = array(
                 'post_type' => 'post',
                 'post_status' => 'publish',
                 'date_query' => array(
                     array(
-                        'after' => '24 hours ago',
+                        'after' => $after_date,
                         'inclusive' => true,
                     ),
                 ),
-                'posts_per_page' => 14, // Max 14 articles
+                'posts_per_page' => 14,
             );
 
             if (!empty($sub_cats)) {
-                $args['category__in'] = $sub_cats;
+                $args['category__in'] = array_map('intval', $sub_cats);
             }
 
             $posts = get_posts($args);
 
-            if (empty($posts)) continue;
+            // Manual trigger fallback: if no posts in 24h, take the latest 14 for the test
+            if (empty($posts) && $force) {
+                error_log("MAN Newsletter: No posts in last 24h for {$sub->email}, falling back to latest articles for manual trigger.");
+                unset($args['date_query']);
+                $posts = get_posts($args);
+            }
+
+            if (empty($posts)) {
+                error_log("MAN Newsletter: Skipping subscriber {$sub->email} - no articles found.");
+                continue;
+            }
 
             $subject = "Votre Récapitulatif Quotidien - " . $date_str;
 
