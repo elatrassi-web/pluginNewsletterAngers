@@ -141,21 +141,29 @@ class MAN_Newsletter {
                 break;
             case 'modern':
             default:
-                $final_html = '<html><body style="margin:0; padding:0; background-color:#f8fafc;">';
-                $final_html .= '<div style="background-color:#f8fafc; padding:60px 20px;">';
-                $final_html .= '<div style="max-width:650px; margin:0 auto; background-color:#ffffff; border-radius:40px; overflow:hidden; box-shadow:0 30px 60px -12px rgba(0,0,0,0.1); border: 1px solid #f1f5f9;">';
+                $final_html = '<html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>';
+                $final_html .= '@media only screen and (max-width: 600px) {';
+                $final_html .= '.man-mobile-padding { padding: 30px 15px !important; }';
+                $final_html .= '.man-mobile-inner-padding { padding: 30px 20px !important; }';
+                $final_html .= '.man-mobile-card { border-radius: 20px !important; }';
+                $final_html .= '.man-column { display: block !important; width: 100% !important; padding: 10px 0 !important; }';
+                $final_html .= '.man-mobile-text-center { text-align: center !important; }';
+                $final_html .= '}';
+                $final_html .= '</style></head><body style="margin:0; padding:0; background-color:#f8fafc;">';
+                $final_html .= '<div class="man-mobile-padding" style="background-color:#f8fafc; padding:60px 20px;">';
+                $final_html .= '<div class="man-mobile-card" style="max-width:650px; margin:0 auto; background-color:#ffffff; border-radius:40px; overflow:hidden; box-shadow:0 30px 60px -12px rgba(0,0,0,0.1); border: 1px solid #f1f5f9;">';
 
                 // Gradient header area
                 $final_html .= '<div style="background: linear-gradient(135deg, #ffffff 0%, #fffbf5 100%); border-bottom: 1px solid #f1f5f9;">' . $logo_html . '</div>';
 
-                $final_html .= '<div style="padding:40px 60px 60px 60px; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif; color:#1e293b; font-size:17px; line-height:1.8;">';
+                $final_html .= '<div class="man-mobile-inner-padding" style="padding:40px 60px 60px 60px; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif; color:#1e293b; font-size:17px; line-height:1.8;">';
                 $final_html .= '<div style="background-color:#f8fafc; border-radius:30px; padding:40px; margin-bottom:50px; border:1px solid #f1f5f9; text-align:center;">';
                 $final_html .= '<h2 style="margin:0; font-size:28px; font-weight:900; color:#0f172a; letter-spacing: -0.5px;">' . esc_html($subject) . '</h2>';
                 $final_html .= '</div>';
                 $final_html .= $content;
                 $final_html .= '</div>';
 
-                $final_html .= '<div style="background-color:#121826; padding:80px 60px; text-align:center;">';
+                $final_html .= '<div class="man-mobile-inner-padding" style="background-color:#121826; padding:80px 60px; text-align:center;">';
                 $final_html .= '<div style="margin-bottom:40px;">';
                 $final_html .= '<span style="color:#f60; font-weight:900; font-size:24px; text-transform:uppercase; letter-spacing:2px;">Angers Info</span>';
                 $final_html .= '</div>';

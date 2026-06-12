@@ -209,7 +209,7 @@ class MAN_Automation {
                 $grid_html .= '<tr>';
                 foreach ($row_posts as $post) {
                     $thumb = get_the_post_thumbnail_url($post->ID, 'medium');
-                    $grid_html .= '<td width="50%" valign="top" style="padding: 10px;">';
+                    $grid_html .= '<td class="man-column" width="50%" valign="top" style="padding: 10px;">';
                     $grid_html .= '<div style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 12px; overflow: hidden; height: 100%;">';
                     if ($thumb) {
                         $grid_html .= '<img src="' . $thumb . '" style="width: 100%; height: 140px; object-fit: cover; display: block; border-bottom: 1px solid #f1f5f9;">';
@@ -222,7 +222,7 @@ class MAN_Automation {
                 }
                 // Handle odd numbers of posts
                 if (count($row_posts) < 2) {
-                    $grid_html .= '<td width="50%">&nbsp;</td>';
+                    $grid_html .= '<td class="man-column" width="50%">&nbsp;</td>';
                 }
                 $grid_html .= '</tr>';
             }
