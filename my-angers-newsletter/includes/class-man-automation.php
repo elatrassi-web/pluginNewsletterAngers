@@ -28,7 +28,7 @@ class MAN_Automation {
     }
 
     public static function send_welcome_email($email) {
-        $subject = "Bienvenue dans l'aventure Angers Press ! 🚀";
+        $subject = "Bienvenue dans l'aventure Angers Info ! 🚀";
 
         $raw_content = '
         <div style="text-align:center; padding: 40px 20px;">
@@ -39,7 +39,7 @@ class MAN_Automation {
             </h2>
 
             <p style="font-size: 20px; color: #475569; line-height: 1.6; margin-bottom: 40px; font-weight: 500;">
-                Merci de nous avoir rejoint ! Vous faites maintenant partie d\'un cercle privilégié de lecteurs passionnés par l\'actualité d\'Angers avec <strong>Angers Press</strong>.
+                Merci de nous avoir rejoint ! Vous faites maintenant partie d\'un cercle privilégié de lecteurs passionnés par l\'actualité d\'Angers avec <strong>Angers Info</strong>.
             </p>
 
             <div style="background-color: #f8fafc; border-radius: 32px; padding: 40px; margin-bottom: 40px; border: 2px dashed #e2e8f0;">

@@ -61,7 +61,7 @@ Fini le temps perdu à chercher les images et les liens de vos articles. Notre m
 
 La solution intègre des triggers automatiques pour maintenir le lien avec votre audience.
 
-- **Mail de Bienvenue (Angers Press) :** Un contenu personnalisé envoyé instantanément après validation.
+- **Mail de Bienvenue (Angers Info) :** Un contenu personnalisé envoyé instantanément après validation.
 - **Notification Post-Publication :** Alerte automatique des abonnés dès qu'un nouvel article est en ligne.
 - **Daily Digest Intelligent :** Un récapitulatif élégant envoyé chaque soir à 18h00, personnalisé selon les départements choisis par chaque abonné.
 - **Maintenance Autonome (Nouveau) :** Système de réparation automatique de la base de données pour garantir une inscription sans faille, même après une mise à jour serveur.
