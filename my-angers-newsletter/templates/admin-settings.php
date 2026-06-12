@@ -6,14 +6,24 @@ if (isset($_POST['man_save_settings'])) {
     update_option('man_double_optin', isset($_POST['double_optin']) ? '1' : '0');
     update_option('man_auto_notify', isset($_POST['auto_notify']) ? '1' : '0');
     update_option('man_daily_digest', isset($_POST['daily_digest']) ? '1' : '0');
+    update_option('man_daily_digest_time', sanitize_text_field($_POST['daily_digest_time']));
     update_option('man_enabled_categories', isset($_POST['enabled_categories']) ? array_map('intval', $_POST['enabled_categories']) : array());
     update_option('man_email_template', sanitize_text_field($_POST['email_template']));
+
+    // Reschedule cron
+    wp_clear_scheduled_hook('man_daily_digest');
+    if (get_option('man_daily_digest') === '1') {
+        $time = get_option('man_daily_digest_time', '18:00');
+        wp_schedule_event(strtotime($time), 'daily', 'man_daily_digest');
+    }
+
     echo '<div class="man-admin-tailwind px-8 pt-8"><div class="bg-emerald-500 text-white p-6 rounded-[2rem] font-black shadow-2xl shadow-emerald-200 animate-bounce flex items-center gap-4"><span class="dashicons dashicons-yes-alt"></span> Réglages enregistrés avec succès !</div></div>';
 }
 
 $double_optin = get_option('man_double_optin', '1');
 $auto_notify = get_option('man_auto_notify', '0');
 $daily_digest = get_option('man_daily_digest', '0');
+$daily_digest_time = get_option('man_daily_digest_time', '18:00');
 $enabled_categories = get_option('man_enabled_categories', array());
 $email_template = get_option('man_email_template', 'modern');
 
@@ -70,31 +80,50 @@ $all_categories = get_categories(array('hide_empty' => 0));
                             </div>
                         </label>
 
-                        <label class="flex items-start gap-8 cursor-pointer group">
-                            <input type="checkbox" name="daily_digest" class="w-8 h-8 mt-1 rounded-xl border-3 border-slate-100 text-[#f60] focus:ring-[#f60] transition-all cursor-pointer checked:scale-110" <?php checked($daily_digest, '1'); ?>>
-                            <div>
-                                <span class="block text-2xl font-black text-slate-800 group-hover:text-[#f60] transition-colors uppercase">Récapitulatif Quotidien</span>
-                                <span class="text-slate-400 font-bold text-base leading-relaxed mt-2 block opacity-70">Envoi groupé automatique à 18h00.</span>
+                        <div class="space-y-4">
+                            <label class="flex items-start gap-8 cursor-pointer group">
+                                <input type="checkbox" name="daily_digest" class="w-8 h-8 mt-1 rounded-xl border-3 border-slate-100 text-[#f60] focus:ring-[#f60] transition-all cursor-pointer checked:scale-110" <?php checked($daily_digest, '1'); ?>>
+                                <div>
+                                    <span class="block text-2xl font-black text-slate-800 group-hover:text-[#f60] transition-colors uppercase">Récapitulatif Quotidien</span>
+                                    <span class="text-slate-400 font-bold text-base leading-relaxed mt-2 block opacity-70">Envoi groupé automatique chaque jour.</span>
+                                </div>
+                            </label>
+                            <div class="ml-16 flex items-center gap-4 bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                                <span class="text-slate-500 font-bold uppercase tracking-widest text-xs">Heure d'envoi :</span>
+                                <input type="time" name="daily_digest_time" value="<?php echo esc_attr($daily_digest_time); ?>" class="bg-white border-2 border-slate-200 rounded-xl px-4 py-2 font-black text-[#121826] focus:border-[#f60] outline-none">
                             </div>
-                        </label>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Maintenance Card -->
                 <div class="bg-white rounded-[3.5rem] p-12 shadow-2xl shadow-slate-200/60 border border-white/50">
-                    <h3 class="text-3xl font-black mb-12 text-slate-900 border-b-2 border-slate-50 pb-8 uppercase tracking-tight">Maintenance & Base de Données</h3>
-                    <p class="text-slate-400 font-bold mb-10 text-lg leading-relaxed">Si vous rencontrez des problèmes lors de l'inscription (erreurs "Unknown column"), utilisez cet outil pour réparer la structure de vos tables.</p>
+                    <h3 class="text-3xl font-black mb-12 text-slate-900 border-b-2 border-slate-50 pb-8 uppercase tracking-tight">Maintenance & Tests</h3>
 
-                    <button type="button" class="man-repair-db-btn flex items-center gap-6 p-10 bg-slate-50 rounded-[3rem] border-4 border-dashed border-slate-100 hover:border-[#f60] hover:bg-slate-100 transition-all group w-full text-left">
-                        <div class="w-20 h-20 bg-slate-200 rounded-[2rem] flex items-center justify-center group-hover:bg-[#f60] group-hover:text-white transition-all shrink-0">
-                            <span class="dashicons dashicons-admin-tools" style="font-size: 40px; width: 40px; height: 40px;"></span>
-                        </div>
-                        <div>
-                            <span class="block text-2xl font-black text-slate-800 uppercase tracking-tighter">Réparer la Structure de Données</span>
-                            <span class="text-slate-400 font-bold text-base opacity-70">Vérifie et ajoute les colonnes manquantes.</span>
-                        </div>
-                    </button>
-                    <div class="man-repair-message mt-6 font-bold text-lg hidden"></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Repair DB -->
+                        <button type="button" class="man-repair-db-btn flex items-center gap-6 p-8 bg-slate-50 rounded-[3rem] border-4 border-dashed border-slate-100 hover:border-[#f60] hover:bg-slate-100 transition-all group text-left">
+                            <div class="w-16 h-16 bg-slate-200 rounded-[2rem] flex items-center justify-center group-hover:bg-[#f60] group-hover:text-white transition-all shrink-0">
+                                <span class="dashicons dashicons-admin-tools" style="font-size: 30px; width: 30px; height: 30px;"></span>
+                            </div>
+                            <div>
+                                <span class="block text-xl font-black text-slate-800 uppercase tracking-tighter">Réparer la DB</span>
+                                <span class="text-slate-400 font-bold text-xs opacity-70">Structure & Colonnes</span>
+                            </div>
+                        </button>
+
+                        <!-- Send Digest Now -->
+                        <button type="button" class="man-trigger-digest-btn flex items-center gap-6 p-8 bg-slate-50 rounded-[3rem] border-4 border-dashed border-slate-100 hover:border-[#f60] hover:bg-slate-100 transition-all group text-left">
+                            <div class="w-16 h-16 bg-slate-200 rounded-[2rem] flex items-center justify-center group-hover:bg-[#f60] group-hover:text-white transition-all shrink-0">
+                                <span class="dashicons dashicons-migrate" style="font-size: 30px; width: 30px; height: 30px;"></span>
+                            </div>
+                            <div>
+                                <span class="block text-xl font-black text-slate-800 uppercase tracking-tighter">Envoyer Récap Now</span>
+                                <span class="text-slate-400 font-bold text-xs opacity-70">Test Immédiat (24h)</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="man-maintenance-message mt-8 font-bold text-lg hidden p-6 rounded-2xl bg-white border border-slate-100 shadow-sm"></div>
                 </div>
 
                 <!-- Template Selection Card -->
@@ -179,22 +208,19 @@ $all_categories = get_categories(array('hide_empty' => 0));
 
 <script>
 jQuery(document).ready(function($) {
+    // Template selection
     $('input[name="email_template"]').on('change', function() {
         const selectedValue = $(this).val();
-
         $('.cursor-pointer.group.relative').each(function() {
             const $container = $(this).find('div.border-4');
             $container.removeClass('border-[#f60] bg-[#f60]/5 shadow-2xl shadow-[#f60]/20')
                       .addClass('border-slate-50 hover:border-slate-200 bg-white hover:bg-slate-50');
             $(this).find('.absolute.inset-0').remove();
         });
-
         const $activeLabel = $(`input[value="${selectedValue}"]`).closest('label');
         const $activeContainer = $activeLabel.find('div.border-4');
-
         $activeContainer.removeClass('border-slate-50 hover:border-slate-200 bg-white hover:bg-slate-50')
                         .addClass('border-[#f60] bg-[#f60]/5 shadow-2xl shadow-[#f60]/20');
-
         $activeLabel.find('.aspect-\\[3\\/4\\]').append(`
             <div class="absolute inset-0 bg-[#f60]/20 backdrop-blur-[2px] flex items-center justify-center">
                 <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl animate-in zoom-in-50 duration-300">
@@ -204,23 +230,41 @@ jQuery(document).ready(function($) {
         `);
     });
 
+    // Repair DB
     $('.man-repair-db-btn').on('click', function() {
         const $btn = $(this);
-        const $message = $('.man-repair-message');
-
+        const $message = $('.man-maintenance-message');
         if (!confirm('Voulez-vous vraiment lancer la réparation de la base de données ?')) return;
-
         $btn.prop('disabled', true).css('opacity', '0.5');
-        $message.removeClass('hidden error success').text('Réparation en cours...').show();
-
+        $message.removeClass('hidden text-red-500 text-emerald-500').text('Réparation en cours...').show();
         $.post(man_admin.ajax_url, {
             action: 'man_repair_db',
             nonce: man_admin.nonce
         }, function(response) {
             if (response.success) {
-                $message.removeClass('text-red-500').addClass('text-emerald-500').text(response.data);
+                $message.addClass('text-emerald-500').text(response.data);
             } else {
-                $message.removeClass('text-emerald-500').addClass('text-red-500').text(response.data);
+                $message.addClass('text-red-500').text(response.data);
+            }
+            $btn.prop('disabled', false).css('opacity', '1');
+        });
+    });
+
+    // Trigger Digest Now
+    $('.man-trigger-digest-btn').on('click', function() {
+        const $btn = $(this);
+        const $message = $('.man-maintenance-message');
+        if (!confirm('Voulez-vous vraiment envoyer le récapitulatif quotidien maintenant ? (Ceci enverra des e-mails réels à tous vos abonnés actifs)')) return;
+        $btn.prop('disabled', true).css('opacity', '0.5');
+        $message.removeClass('hidden text-red-500 text-emerald-500').text('Envoi en cours...').show();
+        $.post(man_admin.ajax_url, {
+            action: 'man_trigger_digest_now',
+            nonce: man_admin.nonce
+        }, function(response) {
+            if (response.success) {
+                $message.addClass('text-emerald-500').text(response.data);
+            } else {
+                $message.addClass('text-red-500').text(response.data);
             }
             $btn.prop('disabled', false).css('opacity', '1');
         });

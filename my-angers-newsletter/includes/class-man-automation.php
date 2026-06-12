@@ -8,6 +8,7 @@ class MAN_Automation {
     public function __construct() {
         add_action('transition_post_status', array($this, 'handle_post_status_transition'), 10, 3);
         add_action('man_daily_digest', array($this, 'send_daily_digest'));
+        add_action('wp_ajax_man_trigger_digest_now', array($this, 'ajax_trigger_digest_now'));
     }
 
     public static function send_confirmation_email($email, $token) {
@@ -52,7 +53,7 @@ class MAN_Automation {
                         <span style="color: #f60; margin-right: 10px;">📊</span> Des analyses exclusives sur notre région
                     </li>
                     <li style="margin-bottom: 0; font-size: 17px; color: #64748b; font-weight: 600;">
-                        <span style="color: #f60; margin-right: 10px;">📅</span> Le récapitulatif quotidien chaque soir à 18h
+                        <span style="color: #f60; margin-right: 10px;">📅</span> Le récapitulatif quotidien chaque soir
                     </li>
                 </ul>
             </div>
@@ -109,8 +110,18 @@ class MAN_Automation {
         }
     }
 
-    public function send_daily_digest() {
-        if (get_option('man_daily_digest', '0') !== '1') {
+    public function ajax_trigger_digest_now() {
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Permission refusée');
+        }
+        check_ajax_referer('man_admin_nonce', 'nonce');
+
+        $this->send_daily_digest(true);
+        wp_send_json_success('Le récapitulatif quotidien a été envoyé aux abonnés actifs (articles des dernières 24h).');
+    }
+
+    public function send_daily_digest($force = false) {
+        if (!$force && get_option('man_daily_digest', '0') !== '1') {
             return;
         }
 
