@@ -158,7 +158,7 @@ class MAN_Newsletter {
 
                 $final_html .= '<div class="man-mobile-inner-padding" style="padding:40px 60px 60px 60px; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif; color:#1e293b; font-size:17px; line-height:1.8;">';
                 $final_html .= '<div style="background-color:#f8fafc; border-radius:30px; padding:40px; margin-bottom:50px; border:1px solid #f1f5f9; text-align:center;">';
-                $final_html .= '<h2 style="margin:0; font-size:28px; font-weight:900; color:#0f172a; letter-spacing: -0.5px;">' . esc_html($subject) . '</h2>';
+                $final_html .= '<h2 style="margin:0; font-size:18px; font-weight:900; color:#0f172a; letter-spacing: -0.5px;">' . esc_html($subject) . '</h2>';
                 $final_html .= '</div>';
                 $final_html .= $content;
                 $final_html .= '</div>';

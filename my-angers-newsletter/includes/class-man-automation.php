@@ -197,7 +197,7 @@ class MAN_Automation {
             $subject = "Votre Récapitulatif Quotidien - " . $date_str;
 
             $grid_html = '<div style="padding-bottom: 30px; border-bottom: 2px solid #f1f5f9; margin-bottom: 30px; text-align: center;">';
-            $grid_html .= '<h1 style="font-size: 24px; font-weight: 900; color: #121826; margin: 0;">Le meilleur de <span style="color: #f60;">vos éditions</span></h1>';
+            $grid_html .= '<h1 style="font-size: 15px; font-weight: 900; color: #121826; margin: 0;">Le meilleur de <span style="color: #f60;">vos éditions</span></h1>';
             $grid_html .= '<p style="color: #64748b; font-size: 14px; margin-top: 5px;">Voici les 14 dernières actualités sélectionnées pour vous.</p>';
             $grid_html .= '</div>';
 
