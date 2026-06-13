@@ -16,9 +16,9 @@ class MAN_Automation {
         $subject = "Confirmez votre inscription - Angers Info";
 
         $raw_content = '<div style="text-align:center; padding: 20px;">';
-        $raw_content .= '<h2 style="font-size:24px; font-weight:800; color:#121826;">Dernière étape !</h2>';
-        $raw_content .= '<p style="font-size:18px; color:#475569; margin-bottom:30px;">Merci de vous être inscrit et d\'avoir choisi vos éditions. Cliquez sur le bouton ci-dessous pour valider votre adresse email et commencer à recevoir votre actu personnalisée.</p>';
-        $raw_content .= '<a href="' . $confirm_url . '" style="display:inline-block; background-color:#f60; color:#fff; padding:18px 40px; text-decoration:none; border-radius:20px; font-weight:900; font-size:18px; box-shadow:0 15px 30px rgba(255,102,0,0.3);">Confirmer mon inscription</a>';
+        $raw_content .= '<h2 style="font-size:20px; font-weight:800; color:#121826;">Dernière étape !</h2>';
+        $raw_content .= '<p style="font-size:16px; color:#475569; margin-bottom:30px;">Merci de vous être inscrit et d\'avoir choisi vos éditions. Cliquez sur le bouton ci-dessous pour valider votre adresse email et commencer à recevoir votre actu personnalisée.</p>';
+        $raw_content .= '<a href="' . $confirm_url . '" style="display:inline-block; background-color:#f60; color:#fff; padding:15px 35px; text-decoration:none; border-radius:20px; font-weight:900; font-size:16px; box-shadow:0 15px 30px rgba(255,102,0,0.3);">Confirmer mon inscription</a>';
         $raw_content .= '</div>';
 
         $newsletter = new MAN_Newsletter();
@@ -33,36 +33,36 @@ class MAN_Automation {
 
         $raw_content = '
         <div style="text-align:center; padding: 40px 20px;">
-            <div style="font-size: 80px; margin-bottom: 30px; display: inline-block; line-height: 1;">🌟</div>
+            <div style="font-size: 60px; margin-bottom: 25px; display: inline-block; line-height: 1;">🌟</div>
 
-            <h2 style="font-size: 36px; font-weight: 900; color: #121826; margin-bottom: 20px; letter-spacing: -1px; line-height: 1.1;">
+            <h2 style="font-size: 24px; font-weight: 900; color: #121826; margin-bottom: 15px; letter-spacing: -1px; line-height: 1.1;">
                 C\'est le début d\'une <span style="color: #f60;">belle histoire.</span>
             </h2>
 
-            <p style="font-size: 20px; color: #475569; line-height: 1.6; margin-bottom: 40px; font-weight: 500;">
+            <p style="font-size: 16px; color: #475569; line-height: 1.6; margin-bottom: 30px; font-weight: 500;">
                 Merci de nous avoir rejoint ! Vous faites maintenant partie d\'un cercle privilégié de lecteurs passionnés par l\'actualité d\'Angers avec <strong>Angers Info</strong>.
             </p>
 
-            <div style="background-color: #f8fafc; border-radius: 32px; padding: 40px; margin-bottom: 40px; border: 2px dashed #e2e8f0;">
-                <h3 style="font-size: 20px; font-weight: 800; color: #121826; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Au programme :</h3>
+            <div style="background-color: #f8fafc; border-radius: 32px; padding: 30px; margin-bottom: 30px; border: 2px dashed #e2e8f0;">
+                <h3 style="font-size: 16px; font-weight: 800; color: #121826; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Au programme :</h3>
                 <ul style="text-align: left; list-style: none; padding: 0; margin: 0; display: inline-block;">
-                    <li style="margin-bottom: 15px; font-size: 17px; color: #64748b; font-weight: 600;">
+                    <li style="margin-bottom: 10px; font-size: 14px; color: #64748b; font-weight: 600;">
                         <span style="color: #f60; margin-right: 10px;">⚡</span> Les actualités brûlantes en temps réel
                     </li>
-                    <li style="margin-bottom: 15px; font-size: 17px; color: #64748b; font-weight: 600;">
+                    <li style="margin-bottom: 10px; font-size: 14px; color: #64748b; font-weight: 600;">
                         <span style="color: #f60; margin-right: 10px;">📊</span> Des analyses exclusives sur notre région
                     </li>
-                    <li style="margin-bottom: 0; font-size: 17px; color: #64748b; font-weight: 600;">
+                    <li style="margin-bottom: 0; font-size: 14px; color: #64748b; font-weight: 600;">
                         <span style="color: #f60; margin-right: 10px;">📅</span> Le récapitulatif quotidien chaque soir
                     </li>
                 </ul>
             </div>
 
-            <p style="font-size: 18px; color: #475569; margin-bottom: 40px; italic: italic;">
+            <p style="font-size: 15px; color: #475569; margin-bottom: 30px; italic: italic;">
                 "L\'information locale, augmentée par la passion."
             </p>
 
-            <a href="' . home_url() . '" style="display: inline-block; background-color: #121826; color: #fff; padding: 22px 50px; text-decoration: none; border-radius: 24px; font-weight: 900; font-size: 18px; box-shadow: 0 20px 40px rgba(18,24,38,0.2); text-transform: uppercase; letter-spacing: 1px;">
+            <a href="' . home_url() . '" style="display: inline-block; background-color: #121826; color: #fff; padding: 18px 40px; text-decoration: none; border-radius: 24px; font-weight: 900; font-size: 16px; box-shadow: 0 20px 40px rgba(18,24,38,0.2); text-transform: uppercase; letter-spacing: 1px;">
                 Découvrir les derniers articles
             </a>
         </div>';
@@ -97,9 +97,9 @@ class MAN_Automation {
 
         $raw_content = '<div style="text-align:center;">';
         if ($thumb) $raw_content .= '<img src="' . $thumb . '" style="width:100%; border-radius:12px; margin-bottom:20px;">';
-        $raw_content .= '<h2 style="font-size:24px; font-weight:800;">' . get_the_title($post->ID) . '</h2>';
-        $raw_content .= '<p>' . $excerpt . '</p>';
-        $raw_content .= '<a href="' . $url . '" style="display:inline-block; background-color:#f60; color:#fff; padding:12px 24px; text-decoration:none; border-radius:8px; font-weight:bold;">Lire la suite</a>';
+        $raw_content .= '<h2 style="font-size:18px; font-weight:800;">' . get_the_title($post->ID) . '</h2>';
+        $raw_content .= '<p style="font-size:14px; color:#475569;">' . $excerpt . '</p>';
+        $raw_content .= '<a href="' . $url . '" style="display:inline-block; background-color:#f60; color:#fff; padding:10px 20px; text-decoration:none; border-radius:8px; font-weight:bold; font-size:14px;">Lire la suite</a>';
         $raw_content .= '</div>';
 
         $newsletter = new MAN_Newsletter();
@@ -197,8 +197,8 @@ class MAN_Automation {
             $subject = "Votre Récapitulatif Quotidien - " . $date_str;
 
             $grid_html = '<div style="padding-bottom: 30px; border-bottom: 2px solid #f1f5f9; margin-bottom: 30px; text-align: center;">';
-            $grid_html .= '<h1 style="font-size: 15px; font-weight: 900; color: #121826; margin: 0;">Le meilleur de <span style="color: #f60;">vos éditions</span></h1>';
-            $grid_html .= '<p style="color: #64748b; font-size: 14px; margin-top: 5px;">Voici les 14 dernières actualités sélectionnées pour vous.</p>';
+            $grid_html .= '<h1 style="font-size: 14px; font-weight: 900; color: #121826; margin: 0;">Le meilleur de <span style="color: #f60;">vos éditions</span></h1>';
+            $grid_html .= '<p style="color: #64748b; font-size: 12px; margin-top: 5px;">Voici les 14 dernières actualités sélectionnées pour vous.</p>';
             $grid_html .= '</div>';
 
             // Start 2-column table layout
@@ -215,8 +215,8 @@ class MAN_Automation {
                         $grid_html .= '<img src="' . $thumb . '" style="width: 100%; height: 140px; object-fit: cover; display: block; border-bottom: 1px solid #f1f5f9;">';
                     }
                     $grid_html .= '<div style="padding: 15px;">';
-                    $grid_html .= '<h3 style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.4; font-weight: 800; color: #121826; height: 40px; overflow: hidden;">' . get_the_title($post->ID) . '</h3>';
-                    $grid_html .= '<p style="font-size: 12px; color: #475569; margin-bottom: 15px; line-height: 1.5; height: 54px; overflow: hidden;">' . wp_trim_words(get_the_excerpt($post->ID), 12) . '</p>';
+                    $grid_html .= '<h3 style="margin: 0 0 10px 0; font-size: 13px; line-height: 1.4; font-weight: 800; color: #121826; height: 38px; overflow: hidden;">' . get_the_title($post->ID) . '</h3>';
+                    $grid_html .= '<p style="font-size: 11px; color: #475569; margin-bottom: 15px; line-height: 1.5; height: 50px; overflow: hidden;">' . wp_trim_words(get_the_excerpt($post->ID), 12) . '</p>';
                     $grid_html .= '<a href="' . get_permalink($post->ID) . '" style="display: inline-block; color: #f60; font-weight: 900; text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">Lire l\'article →</a>';
                     $grid_html .= '</div></div></td>';
                 }

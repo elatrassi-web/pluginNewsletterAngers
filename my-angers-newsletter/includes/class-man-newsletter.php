@@ -124,17 +124,17 @@ class MAN_Newsletter {
                 $final_html .= '<div style="font-family: Georgia, serif; max-width:650px; margin:0 auto; padding: 20px;">';
                 $final_html .= $logo_html;
                 $final_html .= '<div style="padding:0 40px;">';
-                $final_html .= '<h1 style="font-size:32px; border-bottom:2px solid #1a1a1a; padding-bottom:20px; margin-bottom:40px; text-align:center;">' . esc_html($subject) . '</h1>';
-                $final_html .= '<div style="font-size:18px; line-height:1.8; color:#1a1a1a;">' . $content . '</div>';
+                $final_html .= '<h1 style="font-size:24px; border-bottom:2px solid #1a1a1a; padding-bottom:20px; margin-bottom:40px; text-align:center;">' . esc_html($subject) . '</h1>';
+                $final_html .= '<div style="font-size:16px; line-height:1.8; color:#1a1a1a;">' . $content . '</div>';
                 $final_html .= '</div>' . $footer_html . $pixel . '</div></body></html>';
                 break;
             case 'minimal':
                 $final_html = '<html><body style="margin:0; padding:0; background-color:#ffffff; color:#334155;">';
                 $final_html .= '<div style="font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width:550px; margin:0 auto; padding:60px 20px;">';
                 $final_html .= '<div style="margin-bottom:60px; text-align:left;">';
-                $final_html .= '<h2 style="color:#f60; font-weight:900; margin:0; font-size:24px;">Angers Info</h2>';
+                $final_html .= '<h2 style="color:#f60; font-weight:900; margin:0; font-size:20px;">Angers Info</h2>';
                 $final_html .= '</div>';
-                $final_html .= '<div style="font-size:16px; line-height:1.6;">' . $content . '</div>';
+                $final_html .= '<div style="font-size:14px; line-height:1.6;">' . $content . '</div>';
                 $final_html .= '<div style="margin-top:100px; border-top:1px solid #e2e8f0; padding-top:20px; font-size:12px; color:#94a3b8; text-align:left;">';
                 $final_html .= 'Angers Info • <a href="' . $unsubscribe_url . '" style="color:#334155; text-decoration:none;">Désinscription</a>';
                 $final_html .= '</div>' . $pixel . '</div></body></html>';
@@ -156,14 +156,14 @@ class MAN_Newsletter {
                 // Gradient header area
                 $final_html .= '<div style="background: linear-gradient(135deg, #ffffff 0%, #fffbf5 100%); border-bottom: 1px solid #f1f5f9;">' . $logo_html . '</div>';
 
-                $final_html .= '<div class="man-mobile-inner-padding" style="padding:40px 60px 60px 60px; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif; color:#1e293b; font-size:17px; line-height:1.8;">';
+                $final_html .= '<div class="man-mobile-inner-padding" style="padding:40px 60px 60px 60px; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif; color:#1e293b; font-size:15px; line-height:1.8;">';
                 $final_html .= '<div style="background-color:#f8fafc; border-radius:30px; padding:40px; margin-bottom:50px; border:1px solid #f1f5f9; text-align:center;">';
-                $final_html .= '<h2 style="margin:0; font-size:18px; font-weight:900; color:#0f172a; letter-spacing: -0.5px;">' . esc_html($subject) . '</h2>';
+                $final_html .= '<h2 style="margin:0; font-size:16px; font-weight:900; color:#0f172a; letter-spacing: -0.5px;">' . esc_html($subject) . '</h2>';
                 $final_html .= '</div>';
                 $final_html .= $content;
                 $final_html .= '</div>';
 
-                $final_html .= '<div class="man-mobile-inner-padding" style="background-color:#121826; padding:80px 60px; text-align:center;">';
+                $final_html .= '<div class="man-mobile-inner-padding" style="background-color:#121826; padding:60px 60px; text-align:center;">';
                 $final_html .= '<div style="margin-bottom:40px;">';
                 $final_html .= '<span style="color:#f60; font-weight:900; font-size:24px; text-transform:uppercase; letter-spacing:2px;">Angers Info</span>';
                 $final_html .= '</div>';
